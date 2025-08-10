@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -11,6 +13,22 @@ public class Player : MonoBehaviour
     [SerializeField] private float jumpForce;
     [SerializeField] private float doubleJumpForce;
     private bool canDoubleJump;
+
+    [Header("Buffer & Coyote Jump Settings")]
+    [SerializeField] private float bufferJumpWindow = 0.25f;
+    private float bufferJumpActivated = -1f;
+    [SerializeField] private float coyoteJumpWindow = 0.5f;
+    private float coyoteJumpActivated = -1f;
+
+    [Header("Wall Settings")]
+    [SerializeField] private float wallJumpDuration = 0.6f;
+    [SerializeField] private Vector2 wallJumpForce;
+    private bool isWallJumping;
+
+    [Header("Knockback Settings")]
+    [SerializeField] private float knockbackDuration = 1f;
+    [SerializeField] private Vector2 knockbackPower;
+    private bool isKnocked;
 
     [Header("Collision Settings")]
     [SerializeField] private float groundCheckDistance;
@@ -36,12 +54,32 @@ public class Player : MonoBehaviour
     {
         UpdateAirborneStatus();
 
+        if (isKnocked)
+            return;
+
         HandleInput();
         HandleWallSlide();
         HandleMovement();
         HandleFlip();
         HandleCollision();
         HandleAnimations();
+    }
+
+    public void Knockback()
+    {
+        if (isKnocked)
+            return;
+
+        StartCoroutine(KnockbackRoutine());
+        anim.SetTrigger("knockback");
+        rb.linearVelocity = new Vector2(knockbackPower.x * -facingDir, knockbackPower.y);
+    }
+
+    private IEnumerator KnockbackRoutine()
+    {
+        isKnocked = true;
+        yield return new WaitForSeconds(knockbackDuration);
+        isKnocked = false;
     }
 
     private void UpdateAirborneStatus()
@@ -56,12 +94,17 @@ public class Player : MonoBehaviour
     private void BecomeAirborne()
     {
         isAirborne = true;
+
+        if (rb.linearVelocity.y < 0)
+            ActivateCoyoteJump();
     }
 
     private void HandleLanding()
     {
         isAirborne = false;
         canDoubleJump = true;
+
+        AttemptBufferJump();
     }
 
     private void HandleInput()
@@ -70,27 +113,75 @@ public class Player : MonoBehaviour
         yInput = Input.GetAxisRaw("Vertical");
 
         if (Input.GetKeyDown(KeyCode.Space))
+        {
             JumpButton();
+            RequestBufferJump();
+        }
     }
+
+    #region Buffer & Coyote Jump
+    private void RequestBufferJump()
+    {
+        if (isAirborne)
+            bufferJumpActivated = Time.time;
+    }
+    private void AttemptBufferJump()
+    {
+        if (Time.time < bufferJumpActivated + bufferJumpWindow)
+        {
+            bufferJumpActivated = Time.time - 1;
+            Jump();
+        }
+    }
+    private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
+    private void CancelCoyoteJump() => coyoteJumpActivated = Time.time - 1;
+    #endregion
 
     private void JumpButton()
     {
-        if (isGrounded)
+        bool coyoteJumpAvailable = Time.time < coyoteJumpActivated + coyoteJumpWindow;
+
+        if (isGrounded || coyoteJumpAvailable)
         {
             Jump();
+        }
+        else if (isWallDetected && !isGrounded)
+        {
+            WallJump();
         }
         else if (canDoubleJump)
         {
             DoubleJump();
         }
+
+        CancelCoyoteJump();
     }
 
     private void Jump() => rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
     private void DoubleJump()
     {
+        isWallJumping = false;
         canDoubleJump = false;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
+    }
+
+    private void WallJump()
+    {
+        canDoubleJump = true;
+        rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDir, wallJumpForce.y);
+
+        Flip();
+
+        StopAllCoroutines();
+        StartCoroutine(WallJumpRoutine());
+    }
+
+    private IEnumerator WallJumpRoutine()
+    {
+        isWallJumping = true;
+        yield return new WaitForSeconds(wallJumpDuration);
+        isWallJumping = false;
     }
 
     private void HandleWallSlide()
@@ -107,6 +198,9 @@ public class Player : MonoBehaviour
     private void HandleMovement()
     {
         if (isWallDetected)
+            return;
+
+        if (isWallJumping)
             return;
 
         rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocity.y);
