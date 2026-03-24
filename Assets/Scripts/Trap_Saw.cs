@@ -65,6 +65,6 @@ public class Trap_Saw : MonoBehaviour
         yield return new WaitForSeconds(delay);
 
         canMove = true;
-        sr.flipX = !sr.flipX;
+        //sr.flipX = !sr.flipX;
     }
 }
