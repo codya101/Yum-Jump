@@ -235,12 +235,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 6
-  jumpForce: 14
-  doubleJumpForce: 12
+  jumpForce: 16
+  doubleJumpForce: 16
   bufferJumpWindow: 0.25
   coyoteJumpWindow: 0.2
-  wallJumpDuration: 0.6
-  wallJumpForce: {x: 7, y: 14}
+  wallSlideSpeed: 8
+  wallJumpDuration: 0.3
+  wallJumpForce: {x: 5, y: 16}
   knockbackDuration: 0.7
   knockbackPower: {x: 5, y: 7}
   groundCheckDistance: 0.8

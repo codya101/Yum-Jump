@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     private float coyoteJumpActivated = -1f;
 
     [Header("Wall Settings")]
+    [SerializeField] private float wallSlideSpeed = 3f;
     [SerializeField] private float wallJumpDuration = 0.6f;
     [SerializeField] private Vector2 wallJumpForce;
     private bool isWallJumping;
@@ -239,7 +240,7 @@ public class Player : MonoBehaviour
         if (canWallSlide == false)
             return;
 
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * yModifier);
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Clamp(rb.linearVelocity.y, -wallSlideSpeed * yModifier, float.MaxValue));
     }
 
     private void HandleMovement()
