@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     public bool fruitsAreRandom;
     public int fruitsCollected;
     public int totalFruits;
+    public Dictionary<FruitType, int> fruitsCollectedByType = new Dictionary<FruitType, int>();
 
     [Header("Checkpoints")]
     public bool canReactivate;
@@ -50,6 +52,14 @@ public class GameManager : MonoBehaviour
         player = newPlayer.GetComponent<Player>();
     }
 
-    public void AddFruit() => fruitsCollected++;
+    public void AddFruit(FruitType fruitType)
+    {
+        fruitsCollected++;
+
+        if (fruitsCollectedByType.ContainsKey(fruitType))
+            fruitsCollectedByType[fruitType]++;
+        else
+            fruitsCollectedByType[fruitType] = 1;
+    }
     public bool FruitsHaveRandomLook() => fruitsAreRandom;
 }

@@ -51,7 +51,7 @@ public class Fruit : MonoBehaviour
 
         if (player != null)
         {
-            gameManager.AddFruit();
+            gameManager.AddFruit(fruitType);
             Destroy(gameObject);
 
             GameObject newVFX = Instantiate(pickupVFX, transform.position, Quaternion.identity);
