@@ -87,7 +87,7 @@ public class UI_FruitCount : MonoBehaviour
         TextMeshProUGUI text = textObj.AddComponent<TextMeshProUGUI>();
         text.fontSize = fontSize;
         text.alignment = TextAlignmentOptions.MidlineLeft;
-        text.enableWordWrapping = false;
+        text.textWrappingMode = TextWrappingModes.NoWrap;
         text.overflowMode = TextOverflowModes.Overflow;
         LayoutElement textLayout = textObj.AddComponent<LayoutElement>();
         textLayout.preferredWidth = iconSize * 3;
