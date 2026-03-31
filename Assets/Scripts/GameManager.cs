@@ -40,18 +40,6 @@ public class GameManager : MonoBehaviour
         totalFruits = allFruits.Length;
     }
 
-    public void UpdateRespawnPosition(Transform newRespawnPoint) => respawnPoint = newRespawnPoint;
-
-    public void RespawnPlayer() => StartCoroutine(RespawnCoroutine());
-
-    private IEnumerator RespawnCoroutine()
-    {
-        yield return new WaitForSeconds(respawnDelay);
-
-        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
-        player = newPlayer.GetComponent<Player>();
-    }
-
     public void AddFruit(FruitType fruitType)
     {
         fruitsCollected++;
@@ -62,4 +50,27 @@ public class GameManager : MonoBehaviour
             fruitsCollectedByType[fruitType] = 1;
     }
     public bool FruitsHaveRandomLook() => fruitsAreRandom;
+
+    #region  Respawn Management
+    public void UpdateRespawnPosition(Transform newRespawnPoint) => respawnPoint = newRespawnPoint;
+
+    private bool isRespawning;
+
+    public void RespawnPlayer()
+    {
+        if (isRespawning) return;
+        StartCoroutine(RespawnCoroutine());
+    }
+
+    private IEnumerator RespawnCoroutine()
+    {
+        isRespawning = true;
+        yield return new WaitForSeconds(respawnDelay);
+
+        GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
+        player = newPlayer.GetComponent<Player>();
+        isRespawning = false;
+    }
+    #endregion
+
 }
