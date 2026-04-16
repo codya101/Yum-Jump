@@ -130,8 +130,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.020079136, y: 0.0017401576}
-  m_Size: {x: 1.7019749, y: 1.8253273}
+  m_Offset: {x: 0.028665245, y: 0.01161468}
+  m_Size: {x: 1.6275619, y: 1.63901}
   m_Direction: 0
 --- !u!114 &2457152091642013476
 MonoBehaviour:
@@ -154,6 +154,7 @@ MonoBehaviour:
   runSpeed: 4.5
   detectionRange: 7
   losePlayerRange: 7
+  eyeLevelTolerance: 0.5
   deathVFX: {fileID: 6921059573154287674, guid: d6933dc796b6bf14a9b0d1200563be82, type: 3}
   wallCheckDistance: 0.5
   edgeCheckDistance: 1
@@ -230,7 +231,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.04682696, y: -0.32741094}
+  m_Offset: {x: 0.028451681, y: -0.29927886}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -240,7 +241,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.6312525, y: 0.23285198}
+  m_Size: {x: 0.96051955, y: 0.18730426}
   m_EdgeRadius: 0
 --- !u!114 &7721646522053776410
 MonoBehaviour:
