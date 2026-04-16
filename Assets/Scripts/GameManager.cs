@@ -16,7 +16,20 @@ public class GameManager : MonoBehaviour
     public bool fruitsAreRandom;
     public int fruitsCollected;
     public int totalFruits;
+    public int score;
     public Dictionary<FruitType, int> fruitsCollectedByType = new Dictionary<FruitType, int>();
+
+    private static readonly Dictionary<FruitType, int> fruitScores = new Dictionary<FruitType, int>
+    {
+        { FruitType.Apple,      10 },
+        { FruitType.Banana,     25 },
+        { FruitType.Cherry,     50 },
+        { FruitType.Orange,     100 },
+        { FruitType.Strawberry, 250 },
+        { FruitType.Melon,      500 },
+        { FruitType.Kiwi,       750 },
+        { FruitType.Pineapple,  1000 },
+    };
 
     [Header("Checkpoints")]
     public bool canReactivate;
@@ -43,6 +56,7 @@ public class GameManager : MonoBehaviour
     public void AddFruit(FruitType fruitType)
     {
         fruitsCollected++;
+        score += fruitScores[fruitType];
 
         if (fruitsCollectedByType.ContainsKey(fruitType))
             fruitsCollectedByType[fruitType]++;
