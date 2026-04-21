@@ -18,6 +18,7 @@ public class GameManager : MonoBehaviour
     public int totalFruits;
     public int score;
     public Dictionary<FruitType, int> fruitsCollectedByType = new Dictionary<FruitType, int>();
+    public Dictionary<FruitType, int> totalFruitsByType = new Dictionary<FruitType, int>();
 
     private static readonly Dictionary<FruitType, int> fruitScores = new Dictionary<FruitType, int>
     {
@@ -51,6 +52,15 @@ public class GameManager : MonoBehaviour
     {
         Fruit[] allFruits = FindObjectsByType<Fruit>(FindObjectsSortMode.None);
         totalFruits = allFruits.Length;
+
+        foreach (Fruit fruit in allFruits)
+        {
+            FruitType type = fruit.FruitType;
+            if (totalFruitsByType.ContainsKey(type))
+                totalFruitsByType[type]++;
+            else
+                totalFruitsByType[type] = 1;
+        }
     }
 
     public void AddFruit(FruitType fruitType)

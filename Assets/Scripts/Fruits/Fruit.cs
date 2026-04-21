@@ -15,6 +15,7 @@ public enum FruitType
 public class Fruit : MonoBehaviour
 {
     [SerializeField] private FruitType fruitType;
+    public FruitType FruitType => fruitType;
     [SerializeField] private GameObject pickupVFX;
 
     private GameManager gameManager;
