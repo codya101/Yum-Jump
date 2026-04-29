@@ -74,3 +74,6 @@ crashlytics-build.properties
 [Aa]ssets/[Ss]treamingAssets/aa/*
 
 mono_crash*.blob
+
+# Local scratch / parser scripts
+tools_temp/
