@@ -17,6 +17,9 @@ public class AngryPig : MonoBehaviour
     [SerializeField] private float losePlayerRange = 7f;
     [SerializeField] private float eyeLevelTolerance = 0.5f;
 
+    [Header("Stomp")]
+    [SerializeField] private float stompBounceForce = 14f;
+
     [Header("VFX")]
     [SerializeField] private GameObject deathVFX;
 
@@ -269,8 +272,13 @@ public class AngryPig : MonoBehaviour
     {
         if (isDead) return;
 
+        Player player = collision.GetComponent<Player>();
+        if (player == null) return;
+
         Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
         if (playerRb == null || playerRb.linearVelocity.y >= 0) return;
+
+        player.Bounce(stompBounceForce);
 
         isDead = true;
         StopAllCoroutines();

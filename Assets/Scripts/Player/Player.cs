@@ -207,6 +207,13 @@ public class Player : MonoBehaviour
 
     private void Jump() => rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
 
+    public void Bounce(float force)
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, force);
+        canDoubleJump = true;
+        CancelCoyoteJump();
+    }
+
     private void DoubleJump()
     {
         isWallJumping = false;
