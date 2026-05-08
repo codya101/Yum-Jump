@@ -322933,6 +322933,10 @@ PrefabInstance:
       propertyPath: nextSceneName
       value: Level2
       objectReference: {fileID: 0}
+    - target: {fileID: 7935085676052667453, guid: 62193578e08389c4487abc85bc8d4188, type: 3}
+      propertyPath: requiredScore
+      value: 200
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -325800,11 +325804,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -46.97
+      value: -45.88
       objectReference: {fileID: 0}
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.07
+      value: -6.73
       objectReference: {fileID: 0}
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.z

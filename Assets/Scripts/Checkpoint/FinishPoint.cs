@@ -1,10 +1,10 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class FinishPoint : MonoBehaviour
 {
     [SerializeField] private string nextSceneName;
+    [SerializeField] private int requiredScore;
 
     private Animator anim => GetComponent<Animator>();
     private bool isTriggered;
@@ -19,17 +19,17 @@ public class FinishPoint : MonoBehaviour
         {
             isTriggered = true;
             anim.SetTrigger("activate");
-            StartCoroutine(LoadNextSceneRoutine());
+            StartCoroutine(ShowPopupRoutine());
         }
     }
 
-    private IEnumerator LoadNextSceneRoutine()
+    private IEnumerator ShowPopupRoutine()
     {
         yield return null;
         float length = anim.GetCurrentAnimatorStateInfo(0).length;
         yield return new WaitForSeconds(length);
 
-        if (!string.IsNullOrEmpty(nextSceneName))
-            SceneManager.LoadScene(nextSceneName);
+        int score = GameManager.instance != null ? GameManager.instance.score : 0;
+        LevelCompletePopup.Show(score, requiredScore, nextSceneName);
     }
 }
