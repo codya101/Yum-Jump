@@ -3,7 +3,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
-public class AngryPig : MonoBehaviour
+public class AngryPig : MonoBehaviour, IStompable
 {
     [Header("Patrol")]
     [SerializeField] private Transform[] waypoints;
