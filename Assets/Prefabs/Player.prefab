@@ -248,5 +248,5 @@ MonoBehaviour:
   wallCheckDistance: 0.65
   whatIsGround:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
   deathVFX: {fileID: 6921059573154287674, guid: d6933dc796b6bf14a9b0d1200563be82, type: 3}
