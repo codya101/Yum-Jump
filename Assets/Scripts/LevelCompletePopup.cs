@@ -27,7 +27,7 @@ public class LevelCompletePopup : MonoBehaviour
 
     private void Build()
     {
-        Canvas canvas = FindFirstObjectByType<Canvas>();
+        Canvas canvas = ResolveScreenSpaceCanvas();
         if (canvas == null) return;
 
         TMP_FontAsset font = FindSceneFont();
@@ -56,10 +56,18 @@ public class LevelCompletePopup : MonoBehaviour
         panelLayout.padding = new RectOffset(28, 28, 28, 28);
         panelLayout.spacing = 14f;
         panelLayout.childAlignment = TextAnchor.MiddleCenter;
-        panelLayout.childControlHeight = false;
+        panelLayout.childControlHeight = true;
         panelLayout.childControlWidth = true;
         panelLayout.childForceExpandHeight = false;
         panelLayout.childForceExpandWidth = true;
+
+        // Let the panel size itself to its content so the 28px padding stays
+        // even on every side. With a fixed height the content block was
+        // centered within leftover slack, leaving more space top/bottom than
+        // left/right and making the popup look off-center.
+        ContentSizeFitter panelFitter = panel.AddComponent<ContentSizeFitter>();
+        panelFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+        panelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
         TextMeshProUGUI title = CreateText(panel.transform, "Title", "Level Completed!", font, 56f, new Color(1f, 0.85f, 0.3f));
         SetPreferredHeight(title.gameObject, 80f);
@@ -86,6 +94,13 @@ public class LevelCompletePopup : MonoBehaviour
 
         nextButton = CreateButton(buttonRow.transform, "NextBtn", "Next Level", font, new Color(0.28f, 0.55f, 0.32f));
         nextButton.onClick.AddListener(OnNext);
+
+        // The title ends in "!", whose glyph advance carries extra trailing
+        // space, so plain center alignment lets the visible text drift left.
+        // Force a layout pass so the title has its real width, then re-center
+        // it on the actual rendered glyphs.
+        LayoutRebuilder.ForceRebuildLayoutImmediate(panelRT);
+        CenterTextHorizontally(title);
 
         root.SetActive(false);
     }
@@ -114,6 +129,35 @@ public class LevelCompletePopup : MonoBehaviour
             SceneManager.LoadScene(pendingNextScene);
     }
 
+    /// <summary>
+    /// Returns a screen-space canvas to host the popup. Tutorial signs create
+    /// World Space canvases at runtime, so FindFirstObjectByType&lt;Canvas&gt;()
+    /// is unreliable — it can return a sign's tiny world-space canvas and the
+    /// popup would render microscopically off-screen. Falls back to creating a
+    /// screen-space canvas if the scene has none.
+    /// </summary>
+    private static Canvas ResolveScreenSpaceCanvas()
+    {
+        Canvas fallback = null;
+        foreach (Canvas c in FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
+        {
+            if (c.renderMode == RenderMode.WorldSpace)
+                continue;
+            if (c.isRootCanvas)
+                return c;
+            fallback = c;
+        }
+        if (fallback != null)
+            return fallback;
+
+        GameObject canvasGO = new GameObject("LevelCompleteCanvas",
+            typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        Canvas created = canvasGO.GetComponent<Canvas>();
+        created.renderMode = RenderMode.ScreenSpaceOverlay;
+        created.sortingOrder = 32760;
+        return created;
+    }
+
     private static TMP_FontAsset FindSceneFont()
     {
         foreach (TextMeshProUGUI tmp in FindObjectsByType<TextMeshProUGUI>(FindObjectsInactive.Include, FindObjectsSortMode.None))
@@ -121,6 +165,41 @@ public class LevelCompletePopup : MonoBehaviour
             if (tmp.font != null) return tmp.font;
         }
         return null;
+    }
+
+    /// <summary>
+    /// Compensates for asymmetric glyph side-bearings (e.g. a trailing "!")
+    /// so a center-aligned line is optically centered within its rect, not
+    /// merely centered by character advance. Measures the actual rendered
+    /// glyph quads and applies a width-neutral margin shift.
+    /// </summary>
+    private static void CenterTextHorizontally(TextMeshProUGUI tmp)
+    {
+        tmp.ForceMeshUpdate();
+        TMP_TextInfo info = tmp.textInfo;
+
+        float min = float.MaxValue;
+        float max = float.MinValue;
+        for (int i = 0; i < info.characterCount; i++)
+        {
+            TMP_CharacterInfo ci = info.characterInfo[i];
+            if (!ci.isVisible) continue;
+            if (ci.bottomLeft.x < min) min = ci.bottomLeft.x;
+            if (ci.topRight.x > max) max = ci.topRight.x;
+        }
+        if (min > max) return;
+
+        // The visible glyphs span [min, max]; the rect center is local x = 0
+        // (pivot 0.5). A trailing "!" leaves that span off-center, so translate
+        // the text — equal-and-opposite margins keep the width unchanged — until
+        // the rendered ink straddles the center evenly.
+        float inkCenter = (min + max) * 0.5f;
+        if (Mathf.Abs(inkCenter) > 0.25f)
+        {
+            Vector4 m = tmp.margin;
+            tmp.margin = new Vector4(m.x - inkCenter, m.y, m.z + inkCenter, m.w);
+            tmp.ForceMeshUpdate();
+        }
     }
 
     private static void SetPreferredHeight(GameObject go, float h)

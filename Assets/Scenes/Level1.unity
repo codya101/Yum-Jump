@@ -381,7 +381,7 @@ GameObject:
   m_Component:
   - component: {fileID: 114725324}
   - component: {fileID: 114725325}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 3_Jump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -977,6 +977,7 @@ GameObject:
   - component: {fileID: 318110070}
   - component: {fileID: 318110068}
   - component: {fileID: 318110069}
+  - component: {fileID: 318110071}
   m_Layer: 0
   m_Name: TutorialOverlayCamera
   m_TagString: Untagged
@@ -993,7 +994,7 @@ Camera:
   m_GameObject: {fileID: 318110067}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 4
+  m_ClearFlags: 3
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -1094,6 +1095,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 519420032}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &318110071
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318110067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d3de3a25a0a51449d0fd646a7b9424, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mainCamera: {fileID: 519420031}
 --- !u!1001 &326921012
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -385533,6 +385547,8 @@ MonoBehaviour:
   lookAheadDistance: 3
   lookAheadSmoothTime: 0.7
   minSpeedForLookAhead: 1
+  pixelSnap: 1
+  pixelsPerUnit: 16
 --- !u!114 &519420034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -385550,7 +385566,7 @@ MonoBehaviour:
   m_RefResolutionX: 640
   m_RefResolutionY: 360
   m_CropFrame: 0
-  m_GridSnapping: 2
+  m_GridSnapping: 1
   m_FilterMode: 0
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -385566,7 +385582,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 524838047}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: TutorialSigns
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -385836,7 +385852,7 @@ GameObject:
   m_Component:
   - component: {fileID: 632455616}
   - component: {fileID: 632455617}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 6_Fruits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -386574,7 +386590,7 @@ GameObject:
   m_Component:
   - component: {fileID: 891539132}
   - component: {fileID: 891539133}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 5_WallJump
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388200,7 +388216,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1525049628}
   - component: {fileID: 1525049629}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 2_Move
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388833,7 +388849,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1905992427}
   - component: {fileID: 1905992428}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 1_Welcome
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -388895,7 +388911,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1960177081}
   - component: {fileID: 1960177082}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: 4_DoubleJump
   m_TagString: Untagged
   m_Icon: {fileID: 0}

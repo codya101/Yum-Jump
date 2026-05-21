@@ -72,6 +72,12 @@ public static class TutorialOverlayCameraSetup
         overlayData.renderPostProcessing = false;
         EditorUtility.SetDirty(overlayData);
 
+        TutorialOverlayCameraSync sync = overlayGO.GetComponent<TutorialOverlayCameraSync>();
+        if (sync == null) sync = overlayGO.AddComponent<TutorialOverlayCameraSync>();
+        Undo.RecordObject(sync, "Update overlay camera sync");
+        sync.mainCamera = main;
+        EditorUtility.SetDirty(sync);
+
         UniversalAdditionalCameraData mainData = main.GetComponent<UniversalAdditionalCameraData>();
         if (mainData == null) mainData = main.gameObject.AddComponent<UniversalAdditionalCameraData>();
         Undo.RecordObject(mainData, "Update main URP data");
