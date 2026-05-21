@@ -6,6 +6,11 @@ public class CameraFollow : MonoBehaviour
     public Vector3 offset = new Vector3(0, 0, -10);
     public float smoothSpeed = 5f;
     public float lookAheadDistance = 3f;
+    public float lookAheadSmoothTime = 0.5f;
+    public float minSpeedForLookAhead = 1f;
+
+    private float currentLookAhead;
+    private float lookAheadVelocity;
 
     void LateUpdate()
     {
@@ -16,10 +21,14 @@ public class CameraFollow : MonoBehaviour
             return;
         }
 
-        float direction = Mathf.Sign(target.GetComponent<Rigidbody2D>().linearVelocity.x);
-        Vector3 lookAhead = new(direction * lookAheadDistance, 0, 0);
+        float xVel = target.GetComponent<Rigidbody2D>().linearVelocity.x;
+        float targetLookAhead = Mathf.Abs(xVel) < minSpeedForLookAhead
+            ? currentLookAhead
+            : Mathf.Sign(xVel) * lookAheadDistance;
 
-        Vector3 desiredPosition = target.position + offset + lookAhead;
+        currentLookAhead = Mathf.SmoothDamp(currentLookAhead, targetLookAhead, ref lookAheadVelocity, lookAheadSmoothTime);
+
+        Vector3 desiredPosition = target.position + offset + new Vector3(currentLookAhead, 0, 0);
         transform.position = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
     }
 }
