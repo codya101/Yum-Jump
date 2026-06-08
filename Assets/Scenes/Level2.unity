@@ -273588,7 +273588,7 @@ GameObject:
   - component: {fileID: 1528953273}
   - component: {fileID: 1528953275}
   m_Layer: 5
-  m_Name: FruitContainer
+  m_Name: PauseMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -273622,7 +273622,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1528953272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0240e7d7101a04e45ad76db084fb701b, type: 3}
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f60718293a4b5c6d7e8f90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fruitSprites:

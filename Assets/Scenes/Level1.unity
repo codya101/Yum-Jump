@@ -994,7 +994,7 @@ Camera:
   m_GameObject: {fileID: 318110067}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 3
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -388279,7 +388279,7 @@ GameObject:
   - component: {fileID: 1528953273}
   - component: {fileID: 1528953275}
   m_Layer: 5
-  m_Name: FruitContainer
+  m_Name: PauseMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -388313,7 +388313,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1528953272}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0240e7d7101a04e45ad76db084fb701b, type: 3}
+  m_Script: {fileID: 11500000, guid: a1b2c3d4e5f60718293a4b5c6d7e8f90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   fruitSprites:
@@ -389590,11 +389590,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -76.95
+      value: -77.93
       objectReference: {fileID: 0}
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -7.22
+      value: -6.89
       objectReference: {fileID: 0}
     - target: {fileID: 1163236188062347262, guid: da1d02c252771294185c5bee535b881d, type: 3}
       propertyPath: m_LocalPosition.z
