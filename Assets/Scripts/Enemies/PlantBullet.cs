@@ -4,9 +4,23 @@ public class PlantBullet : MonoBehaviour
 {
     [SerializeField] private float lifetime = 4f;
     [SerializeField] private GameObject impactVFX;
+    [Tooltip("Layers that stop the bullet. Defaults to Ground + SmoothWall (tower walls) if left empty.")]
+    [SerializeField] private LayerMask obstacleMask;
 
     private Vector2 direction;
     private float speed;
+    private float radius;
+
+    private void Awake()
+    {
+        // Fall back to terrain layers if the mask wasn't assigned in the inspector.
+        if (obstacleMask == 0)
+            obstacleMask = LayerMask.GetMask("Ground", "SmoothWall");
+
+        CircleCollider2D circle = GetComponent<CircleCollider2D>();
+        if (circle != null)
+            radius = circle.radius * Mathf.Max(transform.lossyScale.x, transform.lossyScale.y);
+    }
 
     public void Launch(Vector2 dir, float spd)
     {
@@ -21,7 +35,21 @@ public class PlantBullet : MonoBehaviour
 
     private void Update()
     {
-        transform.Translate(direction * speed * Time.deltaTime, Space.World);
+        float step = speed * Time.deltaTime;
+
+        // Destroy on solid terrain (incl. tower walls) before passing through it.
+        // A raycast is used rather than physics triggers because the bullet moves
+        // by transform and the tilemaps are static colliders with no Rigidbody2D,
+        // so OnTriggerEnter2D never fires against them. The raycast also ignores the
+        // layer collision matrix, so it works regardless of those settings.
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, step + radius, obstacleMask);
+        if (hit.collider != null)
+        {
+            DestroySelf();
+            return;
+        }
+
+        transform.Translate(direction * step, Space.World);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

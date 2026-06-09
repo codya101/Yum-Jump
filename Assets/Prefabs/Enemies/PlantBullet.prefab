@@ -137,5 +137,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ff632c314f97849b39ba33ec323ed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lifetime: 4
+  lifetime: 6
   impactVFX: {fileID: 8856502763531766503, guid: ad409c396efa3d247a61c5e41289f0e7, type: 3}
