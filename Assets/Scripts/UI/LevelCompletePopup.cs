@@ -11,7 +11,15 @@ public class LevelCompletePopup : MonoBehaviour
     private TextMeshProUGUI yourScoreText;
     private TextMeshProUGUI requiredScoreText;
     private Button nextButton;
+    private TextMeshProUGUI nextButtonLabel;
     private string pendingNextScene;
+
+    // Any level whose FinishPoint points at this scene is the final level, so
+    // its "next" button reads as a finish instead of "Next Level". Point any
+    // level's FinishPoint at this scene and the label updates automatically.
+    private const string CreditsSceneName = "TheEnd";
+    private const string NextLevelLabel = "Next Level";
+    private const string FinalLevelLabel = "The End";
 
     public static void Show(int score, int requiredScore, string nextSceneName)
     {
@@ -92,8 +100,9 @@ public class LevelCompletePopup : MonoBehaviour
         Button restartBtn = CreateButton(buttonRow.transform, "RestartBtn", "Restart", font, new Color(0.62f, 0.28f, 0.28f));
         restartBtn.onClick.AddListener(OnRestart);
 
-        nextButton = CreateButton(buttonRow.transform, "NextBtn", "Next Level", font, new Color(0.28f, 0.55f, 0.32f));
+        nextButton = CreateButton(buttonRow.transform, "NextBtn", NextLevelLabel, font, new Color(0.28f, 0.55f, 0.32f));
         nextButton.onClick.AddListener(OnNext);
+        nextButtonLabel = nextButton.GetComponentInChildren<TextMeshProUGUI>();
 
         // The title ends in "!", whose glyph advance carries extra trailing
         // space, so plain center alignment lets the visible text drift left.
@@ -112,6 +121,10 @@ public class LevelCompletePopup : MonoBehaviour
         requiredScoreText.text = "Required score: " + requiredScore;
         nextButton.interactable = score >= requiredScore;
 
+        // Final level (the one leading to the credits) gets a finish label.
+        if (nextButtonLabel != null)
+            nextButtonLabel.text = nextSceneName == CreditsSceneName ? FinalLevelLabel : NextLevelLabel;
+
         root.SetActive(true);
         Time.timeScale = 0f;
     }
@@ -119,14 +132,14 @@ public class LevelCompletePopup : MonoBehaviour
     private void OnRestart()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneTransition.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     private void OnNext()
     {
         Time.timeScale = 1f;
         if (!string.IsNullOrEmpty(pendingNextScene))
-            SceneManager.LoadScene(pendingNextScene);
+            SceneTransition.LoadScene(pendingNextScene);
     }
 
     /// <summary>
@@ -142,6 +155,10 @@ public class LevelCompletePopup : MonoBehaviour
         foreach (Canvas c in FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
             if (c.renderMode == RenderMode.WorldSpace)
+                continue;
+            // Skip the scene-transition fade overlay; it toggles inactive between
+            // transitions and isn't a valid host for persistent UI.
+            if (c.GetComponentInParent<SceneTransition>() != null)
                 continue;
             if (c.isRootCanvas)
                 return c;

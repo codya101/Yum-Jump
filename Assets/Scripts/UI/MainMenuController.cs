@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Drives the Main Menu. Hook the public methods to button OnClick events
@@ -17,7 +16,7 @@ public class MainMenuController : MonoBehaviour
         // left the timescale at 0 (e.g. a pause/level-complete screen), so
         // reset it before loading so the level runs normally.
         Time.timeScale = 1f;
-        SceneManager.LoadScene(newGameScene);
+        SceneTransition.LoadScene(newGameScene);
     }
 
     /// <summary>Quits the application (ignored in the editor).</summary>

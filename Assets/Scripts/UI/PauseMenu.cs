@@ -415,7 +415,7 @@ public class PauseMenu : MonoBehaviour
         isPaused = false;
         if (Application.CanStreamedLevelBeLoaded(mainMenuSceneName))
         {
-            SceneManager.LoadScene(mainMenuSceneName);
+            SceneTransition.LoadScene(mainMenuSceneName);
         }
         else
         {
@@ -532,6 +532,10 @@ public class PauseMenu : MonoBehaviour
         foreach (Canvas c in FindObjectsByType<Canvas>(FindObjectsInactive.Exclude, FindObjectsSortMode.None))
         {
             if (c.renderMode == RenderMode.WorldSpace) continue;
+            // Never host UI under the scene-transition fade overlay: it toggles
+            // inactive between transitions, which would leave our menu's parent
+            // inactive and break TMP material init.
+            if (c.GetComponentInParent<SceneTransition>() != null) continue;
             if (c.isRootCanvas) return c;
             fallback = c;
         }
