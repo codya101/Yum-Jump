@@ -10,6 +10,8 @@ public class LevelCompletePopup : MonoBehaviour
     private GameObject root;
     private TextMeshProUGUI yourScoreText;
     private TextMeshProUGUI requiredScoreText;
+    private TextMeshProUGUI yourTimeText;
+    private TextMeshProUGUI bestTimeText;
     private Button nextButton;
     private TextMeshProUGUI nextButtonLabel;
     private string pendingNextScene;
@@ -21,7 +23,7 @@ public class LevelCompletePopup : MonoBehaviour
     private const string NextLevelLabel = "Next Level";
     private const string FinalLevelLabel = "The End";
 
-    public static void Show(int score, int requiredScore, string nextSceneName)
+    public static void Show(int score, int requiredScore, string nextSceneName, float levelTime, int levelNumber)
     {
         if (instance == null)
         {
@@ -30,7 +32,7 @@ public class LevelCompletePopup : MonoBehaviour
             instance.Build();
         }
 
-        instance.Display(score, requiredScore, nextSceneName);
+        instance.Display(score, requiredScore, nextSceneName, levelTime, levelNumber);
     }
 
     private void Build()
@@ -86,6 +88,12 @@ public class LevelCompletePopup : MonoBehaviour
         requiredScoreText = CreateText(panel.transform, "RequiredScore", "Required score: 0", font, 28f, new Color(0.85f, 0.85f, 0.85f));
         SetPreferredHeight(requiredScoreText.gameObject, 40f);
 
+        yourTimeText = CreateText(panel.transform, "YourTime", "Your time: 0:00", font, 32f, Color.white);
+        SetPreferredHeight(yourTimeText.gameObject, 44f);
+
+        bestTimeText = CreateText(panel.transform, "BestTime", "Best time: 0:00", font, 28f, new Color(0.85f, 0.85f, 0.85f));
+        SetPreferredHeight(bestTimeText.gameObject, 40f);
+
         GameObject buttonRow = new GameObject("Buttons", typeof(RectTransform), typeof(HorizontalLayoutGroup));
         buttonRow.transform.SetParent(panel.transform, false);
         HorizontalLayoutGroup rowLayout = buttonRow.GetComponent<HorizontalLayoutGroup>();
@@ -114,12 +122,31 @@ public class LevelCompletePopup : MonoBehaviour
         root.SetActive(false);
     }
 
-    private void Display(int score, int requiredScore, string nextSceneName)
+    private void Display(int score, int requiredScore, string nextSceneName, float levelTime, int levelNumber)
     {
         pendingNextScene = nextSceneName;
         yourScoreText.text = "Your score: " + score;
         requiredScoreText.text = "Required score: " + requiredScore;
-        nextButton.interactable = score >= requiredScore;
+
+        bool beaten = score >= requiredScore;
+        nextButton.interactable = beaten;
+
+        // Reaching the finish with enough score counts as beating the level:
+        // record it (fastest time, best fruit, level total) which also unlocks
+        // the next level for the Level Select screen.
+        if (beaten)
+        {
+            string scene = SceneManager.GetActiveScene().name;
+            GameManager gm = GameManager.instance;
+            int fruits = gm != null ? gm.fruitsCollected : 0;
+            int totalFruits = gm != null ? gm.totalFruits : 0;
+            SaveSystem.RecordCompletion(scene, levelNumber, levelTime, fruits, totalFruits);
+        }
+
+        yourTimeText.text = "Your time: " + SaveSystem.FormatTime(levelTime);
+        // Best is read back after recording, so a new record shows immediately.
+        float best = SaveSystem.GetLevel(SceneManager.GetActiveScene().name).bestTime;
+        bestTimeText.text = "Best time: " + SaveSystem.FormatTime(best);
 
         // Final level (the one leading to the credits) gets a finish label.
         if (nextButtonLabel != null)

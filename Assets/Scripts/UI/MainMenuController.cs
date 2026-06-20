@@ -9,14 +9,31 @@ public class MainMenuController : MonoBehaviour
     [Tooltip("Scene loaded by New Game. Level1 is the start of the game.")]
     [SerializeField] private string newGameScene = "Level1";
 
-    /// <summary>Starts a fresh game from the first level.</summary>
+    /// <summary>
+    /// Starts a fresh game: confirms first, then wipes all saved progress and
+    /// loads the first level. The confirmation guards against losing unlocks,
+    /// best times, and fruit records on a misclick.
+    /// </summary>
     public void NewGame()
     {
+        ConfirmDialog.Show("Erase all progress and start over?", StartFreshGame);
+    }
+
+    private void StartFreshGame()
+    {
+        SaveSystem.Wipe();
         // The menu never pauses the game, but a previous session might have
         // left the timescale at 0 (e.g. a pause/level-complete screen), so
         // reset it before loading so the level runs normally.
         Time.timeScale = 1f;
         SceneTransition.LoadScene(newGameScene);
+    }
+
+    /// <summary>Opens the Level Select screen so the player can resume any
+    /// unlocked level. Wired to the Continue button.</summary>
+    public void Continue()
+    {
+        LevelSelectScreen.Show();
     }
 
     /// <summary>Quits the application (ignored in the editor).</summary>

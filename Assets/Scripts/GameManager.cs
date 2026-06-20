@@ -35,6 +35,13 @@ public class GameManager : MonoBehaviour
     [Header("Checkpoints")]
     public bool canReactivate;
 
+    [Header("Level Timer")]
+    // Elapsed play time for the current level, in seconds. Ticks with
+    // Time.deltaTime, so a pause (Time.timeScale = 0) freezes it automatically
+    // while respawn waits still count as play time.
+    public float levelTime;
+    private bool levelTimerRunning = true;
+
     private void Awake()
     {
         if (instance == null)
@@ -47,6 +54,15 @@ public class GameManager : MonoBehaviour
     {
         CollectFruitsInfo();
     }
+
+    private void Update()
+    {
+        if (levelTimerRunning)
+            levelTime += Time.deltaTime;
+    }
+
+    /// <summary>Freezes the level timer (called when the finish is reached).</summary>
+    public void StopLevelTimer() => levelTimerRunning = false;
 
     private void CollectFruitsInfo()
     {

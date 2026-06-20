@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FinishPoint : MonoBehaviour
 {
@@ -18,6 +19,10 @@ public class FinishPoint : MonoBehaviour
         if (player != null)
         {
             isTriggered = true;
+            // Freeze the run time the moment the finish is reached, before the
+            // activation animation plays out.
+            if (GameManager.instance != null)
+                GameManager.instance.StopLevelTimer();
             anim.SetTrigger("activate");
             StartCoroutine(ShowPopupRoutine());
         }
@@ -30,6 +35,8 @@ public class FinishPoint : MonoBehaviour
         yield return new WaitForSeconds(length);
 
         int score = GameManager.instance != null ? GameManager.instance.score : 0;
-        LevelCompletePopup.Show(score, requiredScore, nextSceneName);
+        float levelTime = GameManager.instance != null ? GameManager.instance.levelTime : 0f;
+        int levelNumber = SaveSystem.ParseLevelNumber(SceneManager.GetActiveScene().name);
+        LevelCompletePopup.Show(score, requiredScore, nextSceneName, levelTime, levelNumber);
     }
 }

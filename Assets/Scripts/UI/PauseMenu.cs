@@ -409,8 +409,24 @@ public class PauseMenu : MonoBehaviour
 
     #region Button handlers
 
+    /// <summary>
+    /// Saves fruit collected on this (possibly unfinished) run so it still counts
+    /// toward "most fruit on any attempt". No time is recorded — the run wasn't
+    /// completed — and checkpoint progress is intentionally discarded, so the
+    /// level restarts from the beginning next time.
+    /// </summary>
+    private void FlushAttemptProgress()
+    {
+        GameManager gm = GameManager.instance;
+        if (gm == null) return;
+
+        string scene = SceneManager.GetActiveScene().name;
+        SaveSystem.RecordAttempt(scene, SaveSystem.ParseLevelNumber(scene), gm.fruitsCollected, gm.totalFruits);
+    }
+
     private void OnMainMenu()
     {
+        FlushAttemptProgress();
         Time.timeScale = 1f;
         isPaused = false;
         if (Application.CanStreamedLevelBeLoaded(mainMenuSceneName))
@@ -429,6 +445,7 @@ public class PauseMenu : MonoBehaviour
 
     private void OnExitGame()
     {
+        FlushAttemptProgress();
         Time.timeScale = 1f;
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
