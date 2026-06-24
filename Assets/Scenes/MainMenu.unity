@@ -1598,8 +1598,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Yum Jump
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2928ec49b7743544a80a831330d82644, type: 2}
-  m_sharedMaterial: {fileID: -3485405168472187721, guid: 2928ec49b7743544a80a831330d82644, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: cde1a8d0256d4124e8ca95fa81fca1e2, type: 2}
+  m_sharedMaterial: {fileID: 3405394241024738039, guid: cde1a8d0256d4124e8ca95fa81fca1e2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1623,8 +1623,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 120
-  m_fontSizeBase: 120
+  m_fontSize: 150
+  m_fontSizeBase: 150
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
