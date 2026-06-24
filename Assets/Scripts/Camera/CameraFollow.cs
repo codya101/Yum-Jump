@@ -9,8 +9,14 @@ public class CameraFollow : MonoBehaviour
     public float lookAheadSmoothTime = 0.5f;
     public float minSpeedForLookAhead = 1f;
 
-    [Header("Pixel Perfect")]
-    public bool pixelSnap = true;
+    [Header("Pixel Snap")]
+    // Rounds the camera to the pixel grid each frame so the camera never sits at a
+    // sub-pixel position. That sub-pixel drift is what makes thin seams/gaps flicker
+    // between tilemap tiles while moving. This is a TRANSFORM-only snap: it does not
+    // render through a render texture and does not resample the image, so it does NOT
+    // blur sprites the way the Pixel Perfect Camera did. pixelsPerUnit must match the
+    // sprites' Pixels Per Unit (16 for this project).
+    public bool snapToPixelGrid = true;
     public int pixelsPerUnit = 16;
 
     private float currentLookAhead;
@@ -49,7 +55,7 @@ public class CameraFollow : MonoBehaviour
         smoothPosition = Vector3.Lerp(smoothPosition, desiredPosition, smoothSpeed * Time.deltaTime);
 
         Vector3 finalPosition = smoothPosition;
-        if (pixelSnap && pixelsPerUnit > 0)
+        if (snapToPixelGrid && pixelsPerUnit > 0)
         {
             float unitsPerPixel = 1f / pixelsPerUnit;
             finalPosition.x = Mathf.Round(finalPosition.x / unitsPerPixel) * unitsPerPixel;
