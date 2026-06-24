@@ -43,9 +43,15 @@ public class MainMenuController : MonoBehaviour
         SettingsMenu.Show();
     }
 
-    /// <summary>Quits the application (ignored in the editor).</summary>
+    /// <summary>Quits the game. Matches the Pause menu's Exit Game button: stops
+    /// play mode in the editor, quits the application in a build. Wired to the
+    /// Exit Game button.</summary>
     public void QuitGame()
     {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
+#endif
     }
 }
