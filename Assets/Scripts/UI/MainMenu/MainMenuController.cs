@@ -36,6 +36,13 @@ public class MainMenuController : MonoBehaviour
         LevelSelectScreen.Show();
     }
 
+    /// <summary>Opens the Settings sub-menu (Controls / Sound) as a popup overlay.
+    /// Wired to the Settings button.</summary>
+    public void OpenSettings()
+    {
+        SettingsMenu.Show();
+    }
+
     /// <summary>Quits the application (ignored in the editor).</summary>
     public void QuitGame()
     {
