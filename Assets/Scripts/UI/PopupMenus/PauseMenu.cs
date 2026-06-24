@@ -66,6 +66,18 @@ public class PauseMenu : MonoBehaviour
         if (isPaused) Time.timeScale = 1f;
     }
 
+    /// <summary>
+    /// External pause entry. On WebGL the page calls this (via WebPauseBridge)
+    /// when the player leaves fullscreen with ESC: the browser consumes that ESC
+    /// to exit fullscreen before Unity can see it, so the normal in-game ESC
+    /// handler never fires. Mirrors that handler -- opens the menu only if
+    /// nothing else has already paused the game.
+    /// </summary>
+    public void RequestPause()
+    {
+        if (!isPaused && Time.timeScale != 0f) Pause();
+    }
+
     #region Open / Close
 
     private void Pause()
@@ -319,11 +331,7 @@ public class PauseMenu : MonoBehaviour
     {
         FlushAttemptProgress();
         Time.timeScale = 1f;
-#if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false;
-#else
-        Application.Quit();
-#endif
+        GameExit.Quit();
     }
 
     #endregion

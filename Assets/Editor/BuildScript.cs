@@ -4,17 +4,36 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEngine;
 
-// Headless build entry point, invoked from scripts/build-game.sh via:
+// Headless build entry points, invoked from the wrapper scripts via:
 //   Unity.exe -batchmode -quit -executeMethod BuildScript.BuildWindows
+//   Unity.exe -batchmode -quit -executeMethod BuildScript.BuildWebGL
 //
-// Builds the StandaloneWindows64 player from the scenes currently enabled
-// in File > Build Settings, into Builds/Yum Jump.exe. Exits non-zero on
-// failure so the wrapper script can detect a broken build.
+// Both build from the scenes currently enabled in File > Build Settings.
+// Windows -> Builds/Yum Jump.exe (zipped for download by package-demo.sh).
+// WebGL   -> Builds-WebGL/        (served unzipped for in-browser play by
+//                                  build-webgl.sh).
+// Exits non-zero on failure so the wrapper script can detect a broken build.
 public static class BuildScript
 {
     private const string OutputExe = "Builds/Yum Jump.exe";
 
+    // WebGL output is a *folder* of static files (index.html, Build/,
+    // TemplateData/), served unzipped by the web host so the browser can
+    // load the player. scripts/build-webgl.sh copies it into the site's
+    // public/game/ directory.
+    private const string OutputWebGL = "Builds-WebGL";
+
     public static void BuildWindows()
+    {
+        Build(OutputExe, BuildTarget.StandaloneWindows64, BuildTargetGroup.Standalone);
+    }
+
+    public static void BuildWebGL()
+    {
+        Build(OutputWebGL, BuildTarget.WebGL, BuildTargetGroup.WebGL);
+    }
+
+    private static void Build(string locationPathName, BuildTarget target, BuildTargetGroup targetGroup)
     {
         string[] scenes = EditorBuildSettings.scenes
             .Where(s => s.enabled)
@@ -28,14 +47,14 @@ public static class BuildScript
             return;
         }
 
-        Debug.Log($"[BuildScript] Building {scenes.Length} scene(s): {string.Join(", ", scenes)}");
+        Debug.Log($"[BuildScript] Building {target} ({scenes.Length} scene(s)): {string.Join(", ", scenes)}");
 
         var options = new BuildPlayerOptions
         {
             scenes = scenes,
-            locationPathName = OutputExe,
-            target = BuildTarget.StandaloneWindows64,
-            targetGroup = BuildTargetGroup.Standalone,
+            locationPathName = locationPathName,
+            target = target,
+            targetGroup = targetGroup,
             options = BuildOptions.None,
         };
 
