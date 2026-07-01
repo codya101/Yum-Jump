@@ -14,9 +14,9 @@ using UnityEngine;
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
-    // Resources subfolder (under any Assets/.../Resources/ folder) holding the .wav
-    // clips. Names below are the file names without extension.
-    private const string AudioResourceFolder = "Audio";
+    // Resources subfolder (under any Assets/.../Resources/ folder) holding the SFX
+    // .wav clips. Names below are the file names without extension.
+    private const string AudioResourceFolder = "Audio/SFX";
     private const string MusicVolumeKey = "MusicVolume";
     private const string SfxVolumeKey = "SFXVolume";
     private const string MusicMutedKey = "MusicMuted";
