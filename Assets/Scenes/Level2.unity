@@ -8720,6 +8720,7 @@ MonoBehaviour:
   totalFruits: 0
   score: 0
   canReactivate: 0
+  levelTime: 0
 --- !u!4 &414762726
 Transform:
   m_ObjectHideFlags: 0
@@ -270056,39 +270057,7 @@ Tilemap:
     m_Data: {fileID: 11400000, guid: 24678f46684f6ab4d8f40753deabe167, type: 2}
   - m_RefCount: 1632
     m_Data: {fileID: 11400000, guid: 14ed3073f63f9784cb4632db7c69c24a, type: 2}
-  m_TileSpriteArray:
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
-  - m_RefCount: 0
-    m_Data: {fileID: 0}
+  m_TileSpriteArray: []
   m_TileMatrixArray:
   - m_RefCount: 26112
     m_Data:
@@ -270340,11 +270309,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 2048014674}
   offset: {x: 5, y: 3, z: -10}
-  smoothSpeed: 5
+  smoothSpeed: 15
   lookAheadDistance: 3
   lookAheadSmoothTime: 0.7
   minSpeedForLookAhead: 1
-  pixelSnap: 1
+  snapToPixelGrid: 1
   pixelsPerUnit: 16
 --- !u!1001 &520238050
 PrefabInstance:

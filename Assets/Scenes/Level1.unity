@@ -385611,7 +385611,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 2048014674}
   offset: {x: 5, y: 3, z: -10}
-  smoothSpeed: 5
+  smoothSpeed: 15
   lookAheadDistance: 3
   lookAheadSmoothTime: 0.7
   minSpeedForLookAhead: 1
