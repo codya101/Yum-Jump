@@ -371,68 +371,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
   m_PrefabInstance: {fileID: 154779311}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &114725323
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 114725324}
-  - component: {fileID: 114725325}
-  m_Layer: 9
-  m_Name: 3_Jump
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &114725324
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 114725323}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -62.83, y: 1.57, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 524838047}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114725325
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 114725323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: Press to jump
-  keys: 04000000
-  fontOverride: {fileID: 0}
-  canvasWorldScale: 0.0625
-  canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 15
-  textColor: {r: 0, g: 0.7647059, b: 0.94509804, a: 1}
-  keycapPixelSize: 16
-  keycapSpacingPx: 6
-  keysGapBelowTextPx: -65
-  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
-  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
-  keycapBorderPx: 3
-  spaceKeyWidthMultiplier: 4
-  sortingOrder: 10
-  sortingLayerName: UI
-  targetLayerName: TutorialUI
 --- !u!1 &128987448
 GameObject:
   m_ObjectHideFlags: 0
@@ -473,6 +411,68 @@ Transform:
   - {fileID: 163375319}
   m_Father: {fileID: 680339806}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &137297403
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 137297404}
+  - component: {fileID: 137297405}
+  m_Layer: 0
+  m_Name: 1_Welcome
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &137297404
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 137297403}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -85.2, y: -6.29, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256795269}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &137297405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 137297403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: "Welcome to \nYum Jump!"
+  keys: 
+  fontOverride: {fileID: 0}
+  canvasWorldScale: 0.0625
+  canvasPixelSize: {x: 256, y: 128}
+  textFontSize: 28
+  textColor: {r: 1, g: 0, b: 0, a: 1}
+  keycapPixelSize: 32
+  keycapSpacingPx: 6
+  keysGapBelowTextPx: 8
+  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
+  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
+  keycapBorderPx: 3
+  spaceKeyWidthMultiplier: 4
+  sortingOrder: 10
+  sortingLayerName: UI
+  targetLayerName: TutorialUI
 --- !u!4 &152111152 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
@@ -669,6 +669,43 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2839406917191096217, guid: 6fe58df115173fc4d8e1dddcfba75b64, type: 3}
   m_PrefabInstance: {fileID: 1345455921}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &256795268
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 256795269}
+  m_Layer: 0
+  m_Name: TutorialSigns
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &256795269
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256795268}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 137297404}
+  - {fileID: 685184425}
+  - {fileID: 476835547}
+  - {fileID: 1624107526}
+  - {fileID: 1446956270}
+  - {fileID: 1883801616}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &262667127
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -75804,6 +75841,7 @@ MonoBehaviour:
   totalFruits: 0
   score: 0
   canReactivate: 0
+  levelTime: 0
 --- !u!4 &414762726
 Transform:
   m_ObjectHideFlags: 0
@@ -385322,6 +385360,68 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49055a5b41d284c4ca1fd2b0d70b0b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &476835546
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 476835547}
+  - component: {fileID: 476835548}
+  m_Layer: 0
+  m_Name: 3_Jump
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &476835547
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476835546}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -62.51, y: 1.63, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256795269}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &476835548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 476835546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: Press to jump
+  keys: 0400000005000000
+  fontOverride: {fileID: 0}
+  canvasWorldScale: 0.0625
+  canvasPixelSize: {x: 256, y: 128}
+  textFontSize: 16
+  textColor: {r: 0, g: 0.6509804, b: 1, a: 1}
+  keycapPixelSize: 20
+  keycapSpacingPx: 6
+  keysGapBelowTextPx: -80
+  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
+  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
+  keycapBorderPx: 3
+  spaceKeyWidthMultiplier: 4
+  sortingOrder: 10
+  sortingLayerName: UI
+  targetLayerName: TutorialUI
 --- !u!1 &480924455
 GameObject:
   m_ObjectHideFlags: 0
@@ -385515,45 +385615,8 @@ MonoBehaviour:
   lookAheadDistance: 3
   lookAheadSmoothTime: 0.7
   minSpeedForLookAhead: 1
-  pixelSnap: 1
+  snapToPixelGrid: 1
   pixelsPerUnit: 16
---- !u!1 &524838046
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 524838047}
-  m_Layer: 9
-  m_Name: TutorialSigns
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &524838047
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 524838046}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1905992427}
-  - {fileID: 1525049628}
-  - {fileID: 114725324}
-  - {fileID: 1960177081}
-  - {fileID: 891539132}
-  - {fileID: 632455616}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &545343737
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -385786,70 +385849,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &632455615
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 632455616}
-  - component: {fileID: 632455617}
-  m_Layer: 9
-  m_Name: 6_Fruits
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &632455616
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 632455615}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -38.95, y: -10.97, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 524838047}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &632455617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 632455615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: 'Collect fruits to
-
-    add to your score!'
-  keys: 
-  fontOverride: {fileID: 0}
-  canvasWorldScale: 0.0625
-  canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 15
-  textColor: {r: 1, g: 0, b: 0.018100739, a: 1}
-  keycapPixelSize: 16
-  keycapSpacingPx: 6
-  keysGapBelowTextPx: -15
-  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
-  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
-  keycapBorderPx: 3
-  spaceKeyWidthMultiplier: 4
-  sortingOrder: 10
-  sortingLayerName: UI
-  targetLayerName: TutorialUI
 --- !u!4 &651932522 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1006712782217691704, guid: 275be0235b00df04caf4c374f5729f7a, type: 3}
@@ -386020,6 +386019,68 @@ Transform:
   - {fileID: 59362983}
   m_Father: {fileID: 1797891911}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &685184424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 685184425}
+  - component: {fileID: 685184426}
+  m_Layer: 0
+  m_Name: 2_Move
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &685184425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685184424}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -75.43, y: 1.54, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256795269}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &685184426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 685184424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: "Use these keys \nto move"
+  keys: 01000000030000000600000007000000
+  fontOverride: {fileID: 0}
+  canvasWorldScale: 0.0625
+  canvasPixelSize: {x: 256, y: 128}
+  textFontSize: 16
+  textColor: {r: 0, g: 0.6511247, b: 1, a: 1}
+  keycapPixelSize: 20
+  keycapSpacingPx: 12
+  keysGapBelowTextPx: -70
+  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
+  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
+  keycapBorderPx: 3
+  spaceKeyWidthMultiplier: 4
+  sortingOrder: 10
+  sortingLayerName: UI
+  targetLayerName: TutorialUI
 --- !u!1001 &694032539
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -386524,68 +386585,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
   m_PrefabInstance: {fileID: 1619101506}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &891539131
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 891539132}
-  - component: {fileID: 891539133}
-  m_Layer: 9
-  m_Name: 5_WallJump
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &891539132
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 891539131}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -23.29, y: -11.29, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 524838047}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &891539133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 891539131}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: "Hold A or D against a wall \nto wall slide.\nPress Space to wall jump.\n"
-  keys: 
-  fontOverride: {fileID: 0}
-  canvasWorldScale: 0.0625
-  canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 10
-  textColor: {r: 0, g: 0.7647059, b: 0.94509804, a: 1}
-  keycapPixelSize: 16
-  keycapSpacingPx: 6
-  keysGapBelowTextPx: -15
-  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
-  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
-  keycapBorderPx: 3
-  spaceKeyWidthMultiplier: 4
-  sortingOrder: 10
-  sortingLayerName: UI
-  targetLayerName: TutorialUI
 --- !u!4 &900057244 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
@@ -387829,6 +387828,69 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2965063932104326063, guid: 6e19bdc4433e0d94194bc77f6828bea4, type: 3}
   m_PrefabInstance: {fileID: 1442830000}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1446956269
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1446956270}
+  - component: {fileID: 1446956271}
+  m_Layer: 0
+  m_Name: 5_WallJump
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1446956270
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446956269}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -23.41, y: -11.19, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256795269}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1446956271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446956269}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: "Hold S/D or Left/Right against a wall \nto wall slide.\nPress Space or
+    Up to wall jump.\nChain wall jumps to scale a wall quickly!"
+  keys: 
+  fontOverride: {fileID: 0}
+  canvasWorldScale: 0.0625
+  canvasPixelSize: {x: 256, y: 128}
+  textFontSize: 7
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  keycapPixelSize: 32
+  keycapSpacingPx: 6
+  keysGapBelowTextPx: 8
+  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
+  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
+  keycapBorderPx: 3
+  spaceKeyWidthMultiplier: 4
+  sortingOrder: 10
+  sortingLayerName: UI
+  targetLayerName: TutorialUI
 --- !u!4 &1454315784 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
@@ -388155,68 +388217,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
---- !u!1 &1525049627
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1525049628}
-  - component: {fileID: 1525049629}
-  m_Layer: 9
-  m_Name: 2_Move
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1525049628
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1525049627}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -75.31, y: 1.56, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 524838047}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1525049629
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1525049627}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: "Use these \nkeys to move"
-  keys: 0100000003000000
-  fontOverride: {fileID: 0}
-  canvasWorldScale: 0.0625
-  canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 15
-  textColor: {r: 0, g: 0.76465064, b: 0.9433962, a: 1}
-  keycapPixelSize: 16
-  keycapSpacingPx: 24
-  keysGapBelowTextPx: -65
-  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
-  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
-  keycapBorderPx: 3
-  spaceKeyWidthMultiplier: 4
-  sortingOrder: 10
-  sortingLayerName: UI
-  targetLayerName: TutorialUI
 --- !u!1 &1528953272
 GameObject:
   m_ObjectHideFlags: 0
@@ -388406,6 +388406,70 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
+--- !u!1 &1624107525
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1624107526}
+  - component: {fileID: 1624107527}
+  m_Layer: 0
+  m_Name: 4_DoubleJump
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1624107526
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624107525}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -38.71, y: 1.55, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 256795269}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1624107527
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624107525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  message: 'Tap again in midair
+
+    to double jump'
+  keys: 0400000005000000
+  fontOverride: {fileID: 0}
+  canvasWorldScale: 0.0625
+  canvasPixelSize: {x: 256, y: 128}
+  textFontSize: 14
+  textColor: {r: 0, g: 0.6509804, b: 1, a: 1}
+  keycapPixelSize: 20
+  keycapSpacingPx: 6
+  keysGapBelowTextPx: -70
+  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
+  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
+  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
+  keycapBorderPx: 3
+  spaceKeyWidthMultiplier: 4
+  sortingOrder: 10
+  sortingLayerName: UI
+  targetLayerName: TutorialUI
 --- !u!4 &1624429900 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5178945180678903029, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
@@ -388781,7 +388845,7 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6630105190536396523, guid: 405fea9b856f3e34485eaefce3c4fec5, type: 3}
   m_PrefabInstance: {fileID: 1086281872}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &1905992426
+--- !u!1 &1883801615
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -388789,116 +388853,52 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 1905992427}
-  - component: {fileID: 1905992428}
-  m_Layer: 9
-  m_Name: 1_Welcome
+  - component: {fileID: 1883801616}
+  - component: {fileID: 1883801617}
+  m_Layer: 0
+  m_Name: 6_Fruits
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &1905992427
+--- !u!4 &1883801616
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1905992426}
+  m_GameObject: {fileID: 1883801615}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -83.84, y: -6.12, z: 0.1}
+  m_LocalPosition: {x: -39.03, y: -11.14, z: 0.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 524838047}
+  m_Father: {fileID: 256795269}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1905992428
+--- !u!114 &1883801617
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1905992426}
+  m_GameObject: {fileID: 1883801615}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  message: "Welcome to \nYum Jump!"
+  message: "Collect fruits to \nadd to your score!"
   keys: 
   fontOverride: {fileID: 0}
   canvasWorldScale: 0.0625
   canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 20
+  textFontSize: 16
   textColor: {r: 1, g: 0, b: 0, a: 1}
   keycapPixelSize: 32
   keycapSpacingPx: 6
   keysGapBelowTextPx: 8
-  keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
-  keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
-  keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
-  keycapBorderPx: 3
-  spaceKeyWidthMultiplier: 4
-  sortingOrder: 10
-  sortingLayerName: UI
-  targetLayerName: TutorialUI
---- !u!1 &1960177080
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1960177081}
-  - component: {fileID: 1960177082}
-  m_Layer: 9
-  m_Name: 4_DoubleJump
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1960177081
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1960177080}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -39.33, y: 1.6, z: 0.1}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 524838047}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1960177082
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1960177080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76591a9af9a212346bf6601797229f7d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  message: 'Tap again in midair
-
-    to double jump'
-  keys: 04000000
-  fontOverride: {fileID: 0}
-  canvasWorldScale: 0.0625
-  canvasPixelSize: {x: 256, y: 128}
-  textFontSize: 15
-  textColor: {r: 0, g: 0.7647059, b: 0.94509804, a: 1}
-  keycapPixelSize: 16
-  keycapSpacingPx: 6
-  keysGapBelowTextPx: -65
   keycapFillColor: {r: 0.98, g: 0.95, b: 0.85, a: 1}
   keycapBorderColor: {r: 0, g: 0, b: 0, a: 1}
   keycapLabelColor: {r: 0.05, g: 0.05, b: 0.05, a: 1}
@@ -389766,4 +389766,4 @@ SceneRoots:
   - {fileID: 1042892194}
   - {fileID: 1470858132}
   - {fileID: 53304002}
-  - {fileID: 524838047}
+  - {fileID: 256795269}

@@ -22,11 +22,11 @@ public class ControlsMenu : MonoBehaviour
     // The control list. Extend this as new bindings are added.
     private static readonly (string key, string action)[] Bindings =
     {
-        ("A / D", "Move Left / Right"),
-        ("Hold A / D toward wall", "Wall Slide"),
-        ("Spacebar", "Jump / Double Jump"),
-        ("Spacebar while wall sliding", "Wall Jump"),
-        ("Esc", "Open / Close Pause Menu"),
+        ("A / D  or  Left / Right Arrows", "Move Left / Right"),
+        ("Hold A / D  or  Left / Right Arrows toward wall", "Wall Slide"),
+        ("Spacebar  or  Up Arrow", "Jump / Double Jump"),
+        ("Spacebar / Up Arrow while wall sliding", "Wall Jump"),
+        ("Tab", "Open / Close Pause Menu"),
     };
 
     // Run after the popup closes so the Settings menu can re-show itself.

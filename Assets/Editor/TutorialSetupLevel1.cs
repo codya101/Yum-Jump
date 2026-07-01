@@ -40,19 +40,20 @@ public static class TutorialSetupLevel1
 
         AddSign(root.transform, "2_Move",       new Vector3(-52f, -7f, 0.1f),
                 "Use these keys to move",
-                new[] { TutorialSign.KeyKind.A, TutorialSign.KeyKind.D },
-                keycapSpacingPx: 24f);
+                new[] { TutorialSign.KeyKind.A, TutorialSign.KeyKind.D,
+                        TutorialSign.KeyKind.Left, TutorialSign.KeyKind.Right },
+                keycapSpacingPx: 12f);
 
         AddSign(root.transform, "3_Jump",       new Vector3(-47f, -7f, 0.1f),
                 "Press to jump",
-                new[] { TutorialSign.KeyKind.Space });
+                new[] { TutorialSign.KeyKind.Space, TutorialSign.KeyKind.Up });
 
         AddSign(root.transform, "4_DoubleJump", new Vector3(-42f, -7f, 0.1f),
                 "Tap again in midair\nto double jump",
-                new[] { TutorialSign.KeyKind.Space });
+                new[] { TutorialSign.KeyKind.Space, TutorialSign.KeyKind.Up });
 
         AddSign(root.transform, "5_WallJump",   new Vector3(-37f, -7f, 0.1f),
-                "Hold S or D against a wall to wall slide.\nPress Space to wall jump.\nChain wall jumps to scale a wall quickly!",
+                "Hold S or D against a wall to wall slide.\nPress Space or Up to wall jump.\nChain wall jumps to scale a wall quickly!",
                 new TutorialSign.KeyKind[0]);
 
         AddSign(root.transform, "6_Fruits",      new Vector3(-32f, -7f, 0.1f),
@@ -62,7 +63,7 @@ public static class TutorialSetupLevel1
         EditorSceneManager.MarkSceneDirty(scene);
         Selection.activeGameObject = root;
         EditorGUIUtility.PingObject(root);
-        Debug.Log("TutorialSetupLevel1: created 5 tutorial signs under '" + RootName + "'. Drag them in the Scene view to fine-tune positions, then save the scene.");
+        Debug.Log("TutorialSetupLevel1: created 6 tutorial signs under '" + RootName + "'. Drag them in the Scene view to fine-tune positions, then save the scene.");
     }
 
     private static void AddSign(Transform parent, string name, Vector3 worldPos, string message,

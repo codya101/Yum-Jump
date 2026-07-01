@@ -51,7 +51,7 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Tab))
         {
             if (isPaused) Resume();
             // Don't open the menu on top of another pause source (e.g. the level

@@ -6,7 +6,9 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 public class TutorialSign : MonoBehaviour
 {
-    public enum KeyKind { W, A, S, D, Space }
+    // Append-only: existing signs serialize these by their integer value, so new
+    // kinds must be added at the end to keep already-placed signs valid.
+    public enum KeyKind { W, A, S, D, Space, Up, Left, Right }
 
     [Header("Content")]
     [TextArea(1, 5)] public string message = "Welcome!";
@@ -138,6 +140,18 @@ public class TutorialSign : MonoBehaviour
 
     private float KeyWidthPx(KeyKind k) => k == KeyKind.Space ? keycapPixelSize * spaceKeyWidthMultiplier : keycapPixelSize;
 
+    private static string KeyLabel(KeyKind k)
+    {
+        switch (k)
+        {
+            case KeyKind.Space: return "SPACE";
+            case KeyKind.Up:    return "↑"; // ↑
+            case KeyKind.Left:  return "←"; // ←
+            case KeyKind.Right: return "→"; // →
+            default:            return k.ToString();
+        }
+    }
+
     private void CreateKeycap(Transform parent, KeyKind k, Vector2 anchoredPos, float widthPx, TMP_FontAsset font)
     {
         GameObject cap = new GameObject(k + "Cap", typeof(RectTransform));
@@ -174,7 +188,7 @@ public class TutorialSign : MonoBehaviour
         GameObject labelGO = new GameObject("Label", typeof(RectTransform));
         labelGO.transform.SetParent(capRT, false);
         TextMeshProUGUI label = labelGO.AddComponent<TextMeshProUGUI>();
-        label.text = k == KeyKind.Space ? "SPACE" : k.ToString();
+        label.text = KeyLabel(k);
         label.fontSize = k == KeyKind.Space ? keycapPixelSize * 0.55f : keycapPixelSize * 0.75f;
         label.color = keycapLabelColor;
         label.alignment = TextAlignmentOptions.Center;
