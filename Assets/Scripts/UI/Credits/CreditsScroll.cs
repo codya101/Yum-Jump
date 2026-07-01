@@ -5,7 +5,8 @@ using UnityEngine.UI;
 /// <summary>
 /// Scrolls a credits panel up from the bottom of the screen and, once it has
 /// fully passed the top, loads the menu scene. Put this on the credits content
-/// RectTransform (anchored to bottom-center, pivot 0,0.5 -> y pivot 0).
+/// RectTransform; the start/end positions adapt to whatever anchor and pivot the
+/// content uses.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class CreditsScroll : MonoBehaviour
@@ -48,10 +49,18 @@ public class CreditsScroll : MonoBehaviour
         float canvasHeight = (canvas.transform as RectTransform).rect.height;
         float contentHeight = content.rect.height;
 
-        // Start fully below the screen (top edge at the bottom of the view) and
-        // finish once the bottom edge has scrolled past the top of the view.
-        content.anchoredPosition = new Vector2(content.anchoredPosition.x, -contentHeight);
-        endY = canvasHeight + endPadding;
+        // Work with whatever anchor/pivot the content actually uses (it's a point
+        // anchor, so anchorMin == anchorMax). anchoredPosition.y is measured from
+        // the anchor, which sits at (anchorY - 0.5) * canvasHeight above centre.
+        float anchorY = content.anchorMin.y;
+        float pivotY = content.pivot.y;
+
+        // Start fully below the screen: place the content so its top edge sits at
+        // the bottom of the view. Finish once the bottom edge has scrolled past
+        // the top of the view.
+        float startY = -anchorY * canvasHeight - (1f - pivotY) * contentHeight;
+        content.anchoredPosition = new Vector2(content.anchoredPosition.x, startY);
+        endY = (1f - anchorY) * canvasHeight + pivotY * contentHeight + endPadding;
     }
 
     private void Update()
