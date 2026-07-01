@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Persistent audio singleton: holds music/SFX volume + mute state (persisted to
-/// PlayerPrefs so it survives scene loads) AND plays one-shot sound effects.
+/// PlayerPrefs so it survives scene loads), plays one-shot sound effects, AND drives
+/// looping background music that carries across scene loads.
 ///
 /// Clips are loaded by name from a Resources folder (Assets/Resources/Audio) the
 /// first time they're used and then cached, so nothing needs to be wired in the
@@ -11,12 +13,24 @@ using UnityEngine;
 /// All SFX go through one shared 2D AudioSource created at runtime, so sounds keep
 /// playing even when the object that triggered them is destroyed (e.g. the player
 /// on death) and are unaffected by Time.timeScale (so menu clicks work while paused).
+///
+/// Music is chosen per scene by <see cref="TrackForScene"/>. Because the manager
+/// persists (DontDestroyOnLoad) and re-requesting the already-playing track is a
+/// no-op, the song continues seamlessly when scenes that share a track hand off to
+/// each other (e.g. Level1 -> Level2, or The End -> Main Menu).
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
     // Resources subfolder (under any Assets/.../Resources/ folder) holding the SFX
     // .wav clips. Names below are the file names without extension.
     private const string AudioResourceFolder = "Audio/SFX";
+
+    // Background music. Track names are file names (without extension) inside
+    // MusicResourceFolder. Which track plays where is decided by TrackForScene().
+    private const string MusicResourceFolder = "Audio/BGM/8Bit Music Album - 051321";
+    private const string LevelMusic = "1. Track 1"; // Level1 / Level2 / Level3
+    private const string MenuMusic  = "3. Track 3"; // MainMenu / TheEnd
+
     private const string MusicVolumeKey = "MusicVolume";
     private const string SfxVolumeKey = "SFXVolume";
     private const string MusicMutedKey = "MusicMuted";
@@ -55,10 +69,24 @@ public class AudioManager : MonoBehaviour
     private bool musicMuted;
     private bool sfxMuted;
 
-    // Shared 2D source for all one-shot SFX, plus a name->clip cache so each clip
-    // is only loaded from Resources once.
+    // Shared 2D source for all one-shot SFX, a separate looping source for music,
+    // plus a name->clip cache so each clip is only loaded from Resources once.
     private AudioSource sfxSource;
+    private AudioSource musicSource;
+    private string currentMusicTrack;
     private readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>();
+
+    /// <summary>
+    /// Forces the singleton to exist at launch so it can start music on the very
+    /// first scene. That scene has already loaded by this point, so sceneLoaded
+    /// won't fire for it — we drive its music directly here. Mirrors how
+    /// SceneTransition bootstraps itself.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
+    private static void Bootstrap()
+    {
+        Instance.HandleSceneMusic(SceneManager.GetActiveScene().name);
+    }
 
     private void Awake()
     {
@@ -80,7 +108,22 @@ public class AudioManager : MonoBehaviour
         sfxSource.spatialBlend = 0f;        // 2D — full volume regardless of position.
         sfxSource.ignoreListenerPause = true; // still audible if audio is globally paused.
 
+        musicSource = gameObject.AddComponent<AudioSource>();
+        musicSource.playOnAwake = false;
+        musicSource.loop = true;            // only ever restarts at its natural end.
+        musicSource.spatialBlend = 0f;      // 2D.
+        musicSource.ignoreListenerPause = true; // keeps playing while the game is paused.
+
+        // Switch tracks whenever a new scene loads (see HandleSceneMusic).
+        SceneManager.sceneLoaded += OnSceneLoaded;
+
         ApplyToMixer();
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+            SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     public float MusicVolume
@@ -132,11 +175,15 @@ public class AudioManager : MonoBehaviour
     public float EffectiveSfxVolume => sfxMuted ? 0f : sfxVolume;
 
     /// <summary>
-    /// Pushes the current volumes to the mixer. No-op until a mixer is assigned, so
-    /// it's safe to call now; wiring audio later means only filling this in.
+    /// Pushes the current volumes to the live music source (so slider/mute changes
+    /// take effect immediately) and, if one is assigned, to the mixer. SFX volume is
+    /// applied per-shot in PlaySfx, so it needs nothing continuous here.
     /// </summary>
     private void ApplyToMixer()
     {
+        if (musicSource != null)
+            musicSource.volume = EffectiveMusicVolume;
+
         if (mixer == null) return;
 
         // AudioMixer faders are in decibels; convert 0..1 to dB (with a floor at -80).
@@ -147,6 +194,77 @@ public class AudioManager : MonoBehaviour
     private static float LinearToDecibels(float linear)
     {
         return linear <= 0.0001f ? -80f : Mathf.Log10(linear) * 20f;
+    }
+
+    // ─── Background music ───────────────────────────────────────────────────────
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => HandleSceneMusic(scene.name);
+
+    /// <summary>Starts the track this scene should use. Scenes that share a track
+    /// (the levels, or Main Menu + The End) hand the song off without restarting it;
+    /// scenes with no mapping leave whatever is playing untouched.</summary>
+    private void HandleSceneMusic(string sceneName)
+    {
+        string track = TrackForScene(sceneName);
+        if (track != null)
+            PlayMusic(track);
+    }
+
+    private static string TrackForScene(string sceneName)
+    {
+        switch (sceneName)
+        {
+            case "MainMenu":
+            case "TheEnd":
+                return MenuMusic;
+            case "Level1":
+            case "Level2":
+            case "Level3":
+                return LevelMusic;
+            default:
+                return null;
+        }
+    }
+
+    /// <summary>
+    /// Plays a looping background track by name (file in MusicResourceFolder, without
+    /// extension). If that track is already playing it's left alone, so music carries
+    /// seamlessly across scene loads; looping means it only ever restarts from the top
+    /// when it reaches its natural end.
+    /// </summary>
+    public void PlayMusic(string trackName)
+    {
+        if (musicSource == null || string.IsNullOrEmpty(trackName)) return;
+
+        if (currentMusicTrack == trackName && musicSource.isPlaying) return;
+
+        AudioClip clip = GetMusicClip(trackName);
+        if (clip == null) return;
+
+        currentMusicTrack = trackName;
+        musicSource.clip = clip;
+        musicSource.volume = EffectiveMusicVolume;
+        musicSource.Play();
+    }
+
+    public void StopMusic()
+    {
+        currentMusicTrack = null;
+        if (musicSource != null) musicSource.Stop();
+    }
+
+    private AudioClip GetMusicClip(string trackName)
+    {
+        if (clipCache.TryGetValue(trackName, out AudioClip cached))
+            return cached;
+
+        AudioClip clip = Resources.Load<AudioClip>($"{MusicResourceFolder}/{trackName}");
+        if (clip == null)
+            Debug.LogWarning($"[AudioManager] No music at Resources/{MusicResourceFolder}/{trackName}. " +
+                             "Check the file exists and the name matches.");
+
+        clipCache[trackName] = clip;
+        return clip;
     }
 
     // ─── Sound effects ──────────────────────────────────────────────────────────
