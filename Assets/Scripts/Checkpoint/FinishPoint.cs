@@ -24,6 +24,7 @@ public class FinishPoint : MonoBehaviour
             if (GameManager.instance != null)
                 GameManager.instance.StopLevelTimer();
             anim.SetTrigger("activate");
+            AudioManager.Instance.PlayFinish();
             StartCoroutine(ShowPopupRoutine());
         }
     }

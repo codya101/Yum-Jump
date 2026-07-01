@@ -126,6 +126,7 @@ public class Player : MonoBehaviour
 
     public void Die()
     {
+        AudioManager.Instance.PlayDeath();
         GameObject newDeathVFX = Instantiate(deathVFX, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
@@ -205,7 +206,11 @@ public class Player : MonoBehaviour
         CancelCoyoteJump();
     }
 
-    private void Jump() => rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+    private void Jump()
+    {
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+        AudioManager.Instance.PlayJump();
+    }
 
     public void Bounce(float force)
     {
@@ -219,12 +224,14 @@ public class Player : MonoBehaviour
         isWallJumping = false;
         canDoubleJump = false;
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, doubleJumpForce);
+        AudioManager.Instance.PlayJump();
     }
 
     private void WallJump()
     {
         canDoubleJump = true;
         rb.linearVelocity = new Vector2(wallJumpForce.x * -facingDir, wallJumpForce.y);
+        AudioManager.Instance.PlayWallJump();
 
         Flip();
 

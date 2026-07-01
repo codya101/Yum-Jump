@@ -1,17 +1,22 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Persistent settings singleton for music/SFX volume and mute state.
+/// Persistent audio singleton: holds music/SFX volume + mute state (persisted to
+/// PlayerPrefs so it survives scene loads) AND plays one-shot sound effects.
 ///
-/// The game has no audio yet, but the pause menu's sliders and mute toggles need
-/// real, persisted state to bind to. This stores that state in PlayerPrefs so it
-/// survives scene loads and play sessions. When audio is added later, assign an
-/// AudioMixer in the inspector (or to <see cref="mixer"/> from code) and the
-/// ApplyToMixer() hook below becomes the single place that pushes these values to
-/// the actual mixer — no other code needs to change.
+/// Clips are loaded by name from a Resources folder (Assets/Resources/Audio) the
+/// first time they're used and then cached, so nothing needs to be wired in the
+/// inspector — call sites just do e.g. <c>AudioManager.Instance.PlayJump()</c>.
+/// All SFX go through one shared 2D AudioSource created at runtime, so sounds keep
+/// playing even when the object that triggered them is destroyed (e.g. the player
+/// on death) and are unaffected by Time.timeScale (so menu clicks work while paused).
 /// </summary>
 public class AudioManager : MonoBehaviour
 {
+    // Resources subfolder (under any Assets/.../Resources/ folder) holding the .wav
+    // clips. Names below are the file names without extension.
+    private const string AudioResourceFolder = "Audio";
     private const string MusicVolumeKey = "MusicVolume";
     private const string SfxVolumeKey = "SFXVolume";
     private const string MusicMutedKey = "MusicMuted";
@@ -50,6 +55,11 @@ public class AudioManager : MonoBehaviour
     private bool musicMuted;
     private bool sfxMuted;
 
+    // Shared 2D source for all one-shot SFX, plus a name->clip cache so each clip
+    // is only loaded from Resources once.
+    private AudioSource sfxSource;
+    private readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>();
+
     private void Awake()
     {
         if (instance != null && instance != this)
@@ -64,6 +74,11 @@ public class AudioManager : MonoBehaviour
         sfxVolume = PlayerPrefs.GetFloat(SfxVolumeKey, 1f);
         musicMuted = PlayerPrefs.GetInt(MusicMutedKey, 0) == 1;
         sfxMuted = PlayerPrefs.GetInt(SfxMutedKey, 0) == 1;
+
+        sfxSource = gameObject.AddComponent<AudioSource>();
+        sfxSource.playOnAwake = false;
+        sfxSource.spatialBlend = 0f;        // 2D — full volume regardless of position.
+        sfxSource.ignoreListenerPause = true; // still audible if audio is globally paused.
 
         ApplyToMixer();
     }
@@ -132,5 +147,55 @@ public class AudioManager : MonoBehaviour
     private static float LinearToDecibels(float linear)
     {
         return linear <= 0.0001f ? -80f : Mathf.Log10(linear) * 20f;
+    }
+
+    // ─── Sound effects ──────────────────────────────────────────────────────────
+    // Named helpers so call sites never deal with raw clip names. Add a new sound
+    // by dropping SFX_Something.wav into Assets/Resources/Audio and adding a method.
+
+    public void PlayJump()        => PlaySfx("SFX_Jump");
+    public void PlayWallJump()    => PlaySfx("SFX_WallJump");
+    public void PlayDeath()       => PlaySfx("SFX_Death");
+    public void PlayEnemyKicked() => PlaySfx("SFX_EnemyKicked");
+    public void PlayFinish()      => PlaySfx("SFX_Finish");
+    public void PlayPickup()      => PlaySfxRandom("SFX_PickUp_1", "SFX_PickUp_2");
+    public void PlayRespawn()     => PlaySfxRandom("SFX_Respawn_1", "SFX_Respawn_2");
+    public void PlayMenuSelect()  => PlaySfxRandom("SFX_MenuSelect_1", "SFX_MenuSelect_2");
+
+    /// <summary>
+    /// Plays a one-shot SFX by clip name (file name in Assets/Resources/Audio,
+    /// without extension), scaled by the current effective SFX volume.
+    /// </summary>
+    public void PlaySfx(string clipName, float volumeScale = 1f)
+    {
+        if (sfxSource == null || string.IsNullOrEmpty(clipName)) return;
+
+        AudioClip clip = GetClip(clipName);
+        if (clip == null) return;
+
+        sfxSource.PlayOneShot(clip, EffectiveSfxVolume * volumeScale);
+    }
+
+    /// <summary>Plays one of several clips at random — for events with variants
+    /// (pickups, respawns, menu clicks) so they don't sound repetitive.</summary>
+    private void PlaySfxRandom(params string[] clipNames)
+    {
+        if (clipNames == null || clipNames.Length == 0) return;
+        PlaySfx(clipNames[Random.Range(0, clipNames.Length)]);
+    }
+
+    private AudioClip GetClip(string clipName)
+    {
+        if (clipCache.TryGetValue(clipName, out AudioClip cached))
+            return cached;
+
+        AudioClip clip = Resources.Load<AudioClip>($"{AudioResourceFolder}/{clipName}");
+        if (clip == null)
+            Debug.LogWarning($"[AudioManager] No clip at Resources/{AudioResourceFolder}/{clipName}. " +
+                             "Check the file exists in Assets/Resources/Audio and the name matches.");
+
+        // Cache even a null result so a missing clip isn't re-searched every call.
+        clipCache[clipName] = clip;
+        return clip;
     }
 }

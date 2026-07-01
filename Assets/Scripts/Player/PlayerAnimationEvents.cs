@@ -9,5 +9,9 @@ public class PlayerAnimationEvents : MonoBehaviour
         player = GetComponentInParent<Player>();
     }
 
-    public void FinishRespawn() => player.RespawnFinished(true);
+    public void FinishRespawn()
+    {
+        player.RespawnFinished(true);
+        AudioManager.Instance.PlayRespawn();
+    }
 }

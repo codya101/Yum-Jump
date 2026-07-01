@@ -423,6 +423,9 @@ public class PauseMenu : MonoBehaviour
         cb.disabledColor = new Color(0.4f, 0.4f, 0.4f, 0.5f);
         btn.colors = cb;
 
+        // Every pause-menu button shares the same click sound.
+        btn.onClick.AddListener(() => AudioManager.Instance.PlayMenuSelect());
+
         return btn;
     }
 

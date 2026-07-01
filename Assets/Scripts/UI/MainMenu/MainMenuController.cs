@@ -29,6 +29,7 @@ public class MainMenuController : MonoBehaviour
     /// </summary>
     public void NewGame()
     {
+        AudioManager.Instance.PlayMenuSelect();
         if (SaveSystem.HasSave())
             ConfirmDialog.Show("Erase all progress and start over?", StartFreshGame);
         else
@@ -49,6 +50,7 @@ public class MainMenuController : MonoBehaviour
     /// unlocked level. Wired to the Continue button.</summary>
     public void Continue()
     {
+        AudioManager.Instance.PlayMenuSelect();
         LevelSelectScreen.Show();
     }
 
@@ -56,6 +58,7 @@ public class MainMenuController : MonoBehaviour
     /// Wired to the Settings button.</summary>
     public void OpenSettings()
     {
+        AudioManager.Instance.PlayMenuSelect();
         SettingsMenu.Show();
     }
 
@@ -64,6 +67,7 @@ public class MainMenuController : MonoBehaviour
     /// Exit Game button.</summary>
     public void QuitGame()
     {
+        AudioManager.Instance.PlayMenuSelect();
         GameExit.Quit();
     }
 }

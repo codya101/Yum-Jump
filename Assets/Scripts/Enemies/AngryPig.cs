@@ -278,8 +278,10 @@ public class AngryPig : MonoBehaviour, IStompable
         Rigidbody2D playerRb = collision.GetComponent<Rigidbody2D>();
         if (playerRb == null || playerRb.linearVelocity.y >= 0) return;
 
-        player.Bounce(stompBounceForce);
+        // Play on the very frame the stomp is registered, before any bounce/anim work.
+        AudioManager.Instance.PlayEnemyKicked();
 
+        player.Bounce(stompBounceForce);
         isDead = true;
         StopAllCoroutines();
         rb.linearVelocity = Vector2.zero;
