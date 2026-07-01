@@ -415,9 +415,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e72703d61a147242bfb18dffae42f91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  m_Name:
+  m_EditorClassIdentifier:
   newGameScene: Level1
+  continueButton: {fileID: 1404262396}
 --- !u!114 &55163135
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Drives the Main Menu. Hook the public methods to button OnClick events
@@ -9,14 +10,29 @@ public class MainMenuController : MonoBehaviour
     [Tooltip("Scene loaded by New Game. Level1 is the start of the game.")]
     [SerializeField] private string newGameScene = "Level1";
 
+    [Tooltip("Continue button. Grayed out (non-interactable) when there is no save.")]
+    [SerializeField] private Button continueButton;
+
+    private void Start()
+    {
+        // A brand-new player has nothing to continue, so disable Continue until
+        // there is saved progress. Only New Game and Settings are usable then.
+        if (continueButton != null)
+            continueButton.interactable = SaveSystem.HasSave();
+    }
+
     /// <summary>
-    /// Starts a fresh game: confirms first, then wipes all saved progress and
-    /// loads the first level. The confirmation guards against losing unlocks,
-    /// best times, and fruit records on a misclick.
+    /// Starts a fresh game. When there is existing progress this confirms first,
+    /// then wipes all saved progress and loads the first level. The confirmation
+    /// guards against losing unlocks, best times, and fruit records on a misclick.
+    /// With no save there is nothing to lose, so it skips straight to the level.
     /// </summary>
     public void NewGame()
     {
-        ConfirmDialog.Show("Erase all progress and start over?", StartFreshGame);
+        if (SaveSystem.HasSave())
+            ConfirmDialog.Show("Erase all progress and start over?", StartFreshGame);
+        else
+            StartFreshGame();
     }
 
     private void StartFreshGame()

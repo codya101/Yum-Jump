@@ -144,6 +144,17 @@ public static class SaveSystem
         Save();
     }
 
+    /// <summary>
+    /// True once the player has any recorded progress. A level record is created
+    /// the first time a level is played (attempt or completion), so an empty list
+    /// means a brand-new player with no save — used by the menu to gray out
+    /// Continue and skip the New Game "erase progress?" confirmation.
+    /// </summary>
+    public static bool HasSave()
+    {
+        return Data.levels.Count > 0;
+    }
+
     /// <summary>Erases all saved progress (used by New Game).</summary>
     public static void Wipe()
     {
