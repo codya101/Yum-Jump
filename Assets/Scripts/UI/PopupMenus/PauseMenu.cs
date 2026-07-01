@@ -12,8 +12,8 @@ using UnityEngine.UI;
 /// a full-screen dim overlay + centered panel, paused via Time.timeScale = 0.
 ///
 /// Contents: level title, per-fruit collected counts (replacing the old HUD),
-/// Music/SFX volume sliders with mute toggles (bound to <see cref="AudioManager"/>),
-/// and Main Menu / Exit Game buttons.
+/// a Settings button (opens the shared Controls/Sound sub-menu used by the Main
+/// Menu), and Restart / Main Menu / Exit Game buttons.
 /// </summary>
 public class PauseMenu : MonoBehaviour
 {
@@ -36,13 +36,16 @@ public class PauseMenu : MonoBehaviour
     private static readonly Color TitleColor = new Color(1f, 0.85f, 0.3f);
     private static readonly Color MainMenuBtnColor = new Color(0.28f, 0.45f, 0.62f);
     private static readonly Color ExitBtnColor = new Color(0.62f, 0.28f, 0.28f);
+    private static readonly Color RestartBtnColor = new Color(0.30f, 0.55f, 0.35f);
+    private static readonly Color SettingsBtnColor = new Color(0.42f, 0.38f, 0.60f);
 
     private GameObject root;
     private Transform fruitListContainer;
-    private Slider musicSlider, sfxSlider;
-    private Image musicMuteIcon, sfxMuteIcon;
     private bool isPaused;
     private bool built;
+    // True while the Settings sub-menu overlays the pause menu, so Tab doesn't
+    // resume the game and leave that overlay floating over live gameplay.
+    private bool settingsOpen;
 
     private void Start()
     {
@@ -53,6 +56,10 @@ public class PauseMenu : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            // While the Settings sub-menu is up, let it own the input; its own
+            // Back button closes it and returns to the pause menu.
+            if (settingsOpen) return;
+
             if (isPaused) Resume();
             // Don't open the menu on top of another pause source (e.g. the level
             // complete popup, which also sets timeScale to 0).
@@ -92,7 +99,6 @@ public class PauseMenu : MonoBehaviour
         root.transform.SetAsLastSibling();
 
         RefreshFruitList();
-        SyncAudioControls();
 
         Time.timeScale = 0f;
         isPaused = true;
@@ -134,7 +140,7 @@ public class PauseMenu : MonoBehaviour
         panelRT.anchorMin = new Vector2(0.5f, 0.5f);
         panelRT.anchorMax = new Vector2(0.5f, 0.5f);
         panelRT.pivot = new Vector2(0.5f, 0.5f);
-        panelRT.sizeDelta = new Vector2(660f, 200f);
+        panelRT.sizeDelta = new Vector2(860f, 200f);
         panelRT.anchoredPosition = Vector2.zero;
         panel.GetComponent<Image>().color = PanelColor;
 
@@ -171,24 +177,26 @@ public class PauseMenu : MonoBehaviour
 
         AddSeparator(panel.transform);
 
-        // Audio section
-        musicSlider = AudioSettingsUI.CreateAudioRow(panel.transform, "Music", font,
-            () => AudioManager.Instance.MusicVolume,
-            v => AudioManager.Instance.MusicVolume = v,
-            () => AudioManager.Instance.MusicMuted,
-            m => AudioManager.Instance.MusicMuted = m,
-            out musicMuteIcon);
+        // Settings: opens the same sub-menu the Main Menu uses (Controls + Sound),
+        // replacing the volume sliders that used to live here. Centered in its own
+        // row so it keeps a normal button width rather than stretching full-panel.
+        GameObject settingsRow = new GameObject("SettingsRow", typeof(RectTransform), typeof(HorizontalLayoutGroup));
+        settingsRow.transform.SetParent(panel.transform, false);
+        HorizontalLayoutGroup settingsLayout = settingsRow.GetComponent<HorizontalLayoutGroup>();
+        settingsLayout.spacing = 24f;
+        settingsLayout.childAlignment = TextAnchor.MiddleCenter;
+        settingsLayout.childControlHeight = true;
+        settingsLayout.childControlWidth = true;
+        settingsLayout.childForceExpandHeight = false;
+        settingsLayout.childForceExpandWidth = false;
+        SetPreferredHeight(settingsRow, 80f);
 
-        sfxSlider = AudioSettingsUI.CreateAudioRow(panel.transform, "SFX", font,
-            () => AudioManager.Instance.SfxVolume,
-            v => AudioManager.Instance.SfxVolume = v,
-            () => AudioManager.Instance.SfxMuted,
-            m => AudioManager.Instance.SfxMuted = m,
-            out sfxMuteIcon);
+        Button settingsBtn = CreateButton(settingsRow.transform, "SettingsBtn", "Settings", SettingsBtnColor);
+        settingsBtn.onClick.AddListener(OnSettings);
 
         AddSeparator(panel.transform);
 
-        // Buttons
+        // Buttons: Restart | Main Menu | Exit Game
         GameObject buttonRow = new GameObject("Buttons", typeof(RectTransform), typeof(HorizontalLayoutGroup));
         buttonRow.transform.SetParent(panel.transform, false);
         HorizontalLayoutGroup rowLayout = buttonRow.GetComponent<HorizontalLayoutGroup>();
@@ -199,6 +207,9 @@ public class PauseMenu : MonoBehaviour
         rowLayout.childForceExpandHeight = false;
         rowLayout.childForceExpandWidth = false;
         SetPreferredHeight(buttonRow, 80f);
+
+        Button restartBtn = CreateButton(buttonRow.transform, "RestartBtn", "Restart", RestartBtnColor);
+        restartBtn.onClick.AddListener(OnRestart);
 
         Button mainMenuBtn = CreateButton(buttonRow.transform, "MainMenuBtn", "Main Menu", MainMenuBtnColor);
         mainMenuBtn.onClick.AddListener(OnMainMenu);
@@ -278,19 +289,6 @@ public class PauseMenu : MonoBehaviour
 
     #endregion
 
-    #region Audio controls
-
-    private void SyncAudioControls()
-    {
-        AudioManager am = AudioManager.Instance;
-        if (musicSlider != null) musicSlider.SetValueWithoutNotify(am.MusicVolume);
-        if (sfxSlider != null) sfxSlider.SetValueWithoutNotify(am.SfxVolume);
-        if (musicMuteIcon != null) musicMuteIcon.sprite = am.MusicMuted ? AudioSettingsUI.GetSpeakerMutedSprite() : AudioSettingsUI.GetSpeakerOnSprite();
-        if (sfxMuteIcon != null) sfxMuteIcon.sprite = am.SfxMuted ? AudioSettingsUI.GetSpeakerMutedSprite() : AudioSettingsUI.GetSpeakerOnSprite();
-    }
-
-    #endregion
-
     #region Button handlers
 
     /// <summary>
@@ -306,6 +304,28 @@ public class PauseMenu : MonoBehaviour
 
         string scene = SceneManager.GetActiveScene().name;
         SaveSystem.RecordAttempt(scene, SaveSystem.ParseLevelNumber(scene), gm.fruitsCollected, gm.totalFruits);
+    }
+
+    private void OnRestart()
+    {
+        FlushAttemptProgress();
+        Time.timeScale = 1f;
+        isPaused = false;
+        SceneTransition.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    private void OnSettings()
+    {
+        // Opens the shared Controls/Sound sub-menu (same as the Main Menu). It
+        // overlays the pause menu and returns to it when the player presses Back.
+        // Works while paused: UI input is independent of Time.timeScale.
+        settingsOpen = true;
+        SettingsMenu.Show(() =>
+        {
+            settingsOpen = false;
+            // Re-assert the pause panel on top after the sub-menu is destroyed.
+            if (root != null) root.transform.SetAsLastSibling();
+        });
     }
 
     private void OnMainMenu()

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,10 +23,16 @@ public class SettingsMenu : MonoBehaviour
     // just the host, or the overlay would linger on screen.
     private GameObject root;
 
-    public static void Show()
+    // Optional: invoked after this menu closes (Back). Lets a caller (e.g. the
+    // PauseMenu) know the sub-menu is no longer open so it can re-assert itself.
+    private Action onClose;
+
+    public static void Show(Action onClose = null)
     {
         GameObject host = new GameObject("SettingsMenu");
-        host.AddComponent<SettingsMenu>().Build();
+        SettingsMenu menu = host.AddComponent<SettingsMenu>();
+        menu.onClose = onClose;
+        menu.Build();
     }
 
     private void Build()
@@ -107,7 +114,9 @@ public class SettingsMenu : MonoBehaviour
 
     private void Close()
     {
+        Action cb = onClose;
         if (root != null) Destroy(root);
         Destroy(gameObject);
+        cb?.Invoke();
     }
 }
