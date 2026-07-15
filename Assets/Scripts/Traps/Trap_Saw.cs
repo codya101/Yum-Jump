@@ -15,10 +15,45 @@ public class Trap_Saw : MonoBehaviour
     public int moveDirection = 1;
     private bool canMove = true;
 
+    [Header("Audio")]
+    [Tooltip("Loudness of the saw whir at full SFX volume, before the SFX slider scales it. " +
+             "Kept low so nearby saws don't drown out other SFX.")]
+    [SerializeField, Range(0f, 1f)] private float sawVolume = 0.5f;
+    [Tooltip("Distance (world units) within which the saw is at full volume.")]
+    [SerializeField] private float minDistance = 10f;
+    [Tooltip("Distance (world units) beyond which the saw is silent.")]
+    [SerializeField] private float maxDistance = 24f;
+    private const string SawClip = "Audio/SFX/SFX_Saw_Trap";
+    private static AudioClip sawClip;
+    private AudioSource sawSource;
+
     private void Awake()
     {
         anim = GetComponent<Animator>();
         sr = GetComponent<SpriteRenderer>();
+
+        SetupAudio();
+    }
+
+    // 3D looping whir that follows the saw, so its volume falls off with the player's
+    // distance (like the fan wind). Gated on canMove in Update so it goes quiet while the
+    // blade is parked at a waypoint. The clip is cached statically across all saws.
+    private void SetupAudio()
+    {
+        if (sawClip == null) sawClip = Resources.Load<AudioClip>(SawClip);
+
+        sawSource = gameObject.AddComponent<AudioSource>();
+        sawSource.clip = sawClip;
+        sawSource.loop = true;
+        sawSource.playOnAwake = true;
+        sawSource.spatialBlend = 1f;                 // 3D: fades with distance from the saw.
+        sawSource.rolloffMode = AudioRolloffMode.Linear;
+        sawSource.minDistance = minDistance;
+        sawSource.maxDistance = maxDistance;
+        sawSource.dopplerLevel = 0f;
+        sawSource.volume = 0f;                        // set properly each frame in Update.
+
+        if (sawClip != null) sawSource.Play();
     }
 
     private void Start()
@@ -40,6 +75,12 @@ public class Trap_Saw : MonoBehaviour
     private void Update()
     {
         anim.SetBool("active", canMove);
+
+        // Whir only while the blade is moving; silent while parked. The 3D rolloff on
+        // the source then scales this by the player's distance. EffectiveSfxVolume folds
+        // in the SFX slider + mute, so this stays in sync with the rest of the audio.
+        if (sawSource != null)
+            sawSource.volume = (canMove ? sawVolume : 0f) * AudioManager.Instance.EffectiveSfxVolume;
 
         if (canMove == false)
             return;

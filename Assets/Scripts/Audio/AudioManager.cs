@@ -290,10 +290,12 @@ public class AudioManager : MonoBehaviour
     public void PlayDeath()       => PlaySfx("SFX_Death");
     public void PlayEnemyKicked() => PlaySfx("SFX_EnemyKicked");
     public void PlayFinish()      => PlaySfx("SFX_Finish");
+    public void PlayCheckpoint()  => PlaySfx("SFX_Finish"); // reuses the finish sound for now
     public void PlayPickup()      => PlaySfxRandom("SFX_PickUp_1", "SFX_PickUp_2");
     public void PlayRespawn()     => PlaySfxRandom("SFX_Respawn_1", "SFX_Respawn_2");
     public void PlayMenuSelect()  => PlaySfxRandom("SFX_MenuSelect_1", "SFX_MenuSelect_2");
     public void PlayStartFlag()   => PlaySfx("SFX_Spring_Boing"); // arrow sign bend-and-flick
+    public void PlayPigCharge()   => PlaySfx("SFX_Pig", 3f);      // AngryPig turns red and charges (clip is quiet, so 3x)
 
     // ─── Footsteps ──────────────────────────────────────────────────────────────
     // The imported "Footsteps - Essentials" pack keeps one folder per surface, each

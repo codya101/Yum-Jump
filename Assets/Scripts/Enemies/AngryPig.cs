@@ -166,6 +166,7 @@ public class AngryPig : MonoBehaviour, IStompable
                 idleCoroutine = null;
             }
             state = State.Chasing;
+            AudioManager.Instance.PlayPigCharge(); // pig turns red and charges
         }
     }
 

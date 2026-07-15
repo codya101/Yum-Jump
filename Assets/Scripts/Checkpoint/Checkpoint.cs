@@ -27,6 +27,7 @@ public class Checkpoint : MonoBehaviour
     {
         isActive = true;
         anim.SetTrigger("activate");
+        AudioManager.Instance.PlayCheckpoint();
         GameManager.instance.UpdateRespawnPosition(transform);
     }
 }
