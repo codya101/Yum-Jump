@@ -76,6 +76,13 @@ public class AudioManager : MonoBehaviour
     private string currentMusicTrack;
     private readonly Dictionary<string, AudioClip> clipCache = new Dictionary<string, AudioClip>();
 
+    // Looping wall-slide friction sound. Unlike the one-shots it's a held state, so it
+    // gets its own source that Player drives on/off via SetWallSliding (instant, no fade).
+    // The clip is loud, so it sits at a low base level.
+    private AudioSource wallSlideSource;
+    private const string WallSlideClip = "SFX_Sliding";
+    private const float WallSlideVolume = 0.3f;    // base level before the SFX slider scales it.
+
     /// <summary>
     /// Forces the singleton to exist at launch so it can start music on the very
     /// first scene. That scene has already loaded by this point, so sceneLoaded
@@ -113,6 +120,13 @@ public class AudioManager : MonoBehaviour
         musicSource.loop = true;            // only ever restarts at its natural end.
         musicSource.spatialBlend = 0f;      // 2D.
         musicSource.ignoreListenerPause = true; // keeps playing while the game is paused.
+
+        wallSlideSource = gameObject.AddComponent<AudioSource>();
+        wallSlideSource.playOnAwake = false;
+        wallSlideSource.loop = true;
+        wallSlideSource.spatialBlend = 0f;  // 2D.
+        wallSlideSource.volume = 0f;        // faded up by Update while sliding.
+        wallSlideSource.clip = GetClip(WallSlideClip);
 
         // Switch tracks whenever a new scene loads (see HandleSceneMusic).
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -279,6 +293,7 @@ public class AudioManager : MonoBehaviour
     public void PlayPickup()      => PlaySfxRandom("SFX_PickUp_1", "SFX_PickUp_2");
     public void PlayRespawn()     => PlaySfxRandom("SFX_Respawn_1", "SFX_Respawn_2");
     public void PlayMenuSelect()  => PlaySfxRandom("SFX_MenuSelect_1", "SFX_MenuSelect_2");
+    public void PlayStartFlag()   => PlaySfx("SFX_Spring_Boing"); // arrow sign bend-and-flick
 
     // ─── Footsteps ──────────────────────────────────────────────────────────────
     // The imported "Footsteps - Essentials" pack keeps one folder per surface, each
@@ -291,15 +306,35 @@ public class AudioManager : MonoBehaviour
     private const string FootstepsRoot = "Footsteps - Essentials";
     private const float FootstepVolume = 1.0f;
 
-    /// <summary>Plays one random walk step for the given surface (wood by default).</summary>
+    // Alternates between the two clips below (left/right foot) rather than picking at
+    // random, which sounded uneven. Flips 0 <-> 1 on each step.
+    private int footstepIndex;
+
+    /// <summary>Plays the next walk step for the given surface (wood by default),
+    /// cycling through a small set of clips so steps alternate like footfalls.</summary>
     public void PlayFootstep(Surface surface = Surface.Wood)
     {
         switch (surface)
         {
             case Surface.Wood:
-                // 10 variants on disk: Footsteps_Wood_Walk_01 .. _10.
-                int n = Random.Range(1, 11);
+                // Cycle Footsteps_Wood_Walk_01 <-> _02 for a steady left/right cadence.
+                int n = footstepIndex + 1;
+                footstepIndex = (footstepIndex + 1) % 2;
                 PlaySfx($"{FootstepsRoot}/Footsteps_Wood/Footsteps_Wood_Walk/Footsteps_Wood_Walk_{n:00}", FootstepVolume);
+                break;
+        }
+    }
+
+    /// <summary>Plays a landing thud for the given surface (wood by default) — call
+    /// this the moment the player touches down after being airborne.</summary>
+    public void PlayLand(Surface surface = Surface.Wood)
+    {
+        switch (surface)
+        {
+            case Surface.Wood:
+                // One-shot on landing, so a random pick of the two variants reads fine.
+                int n = Random.Range(1, 3); // 01 or 02
+                PlaySfx($"{FootstepsRoot}/Footsteps_Wood/Footsteps_Wood_Jump/Footsteps_Wood_Jump_Land_{n:00}", FootstepVolume);
                 break;
         }
     }
@@ -324,6 +359,27 @@ public class AudioManager : MonoBehaviour
     {
         if (clipNames == null || clipNames.Length == 0) return;
         PlaySfx(clipNames[Random.Range(0, clipNames.Length)]);
+    }
+
+    // ─── Wall slide (looping) ─────────────────────────────────────────────────────
+
+    /// <summary>Turns the looping wall-slide friction sound on/off instantly. Player
+    /// calls this every frame with its current slide state, so setting the volume here
+    /// also keeps it tracking the SFX slider live while a slide is held.</summary>
+    public void SetWallSliding(bool sliding)
+    {
+        if (wallSlideSource == null) return;
+
+        if (sliding)
+        {
+            wallSlideSource.volume = WallSlideVolume * EffectiveSfxVolume;
+            if (wallSlideSource.clip != null && !wallSlideSource.isPlaying)
+                wallSlideSource.Play();
+        }
+        else if (wallSlideSource.isPlaying)
+        {
+            wallSlideSource.Stop();
+        }
     }
 
     private AudioClip GetClip(string clipName)

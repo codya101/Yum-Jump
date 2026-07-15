@@ -75,10 +75,16 @@ public class Player : MonoBehaviour
         UpdateAirborneStatus();
 
         if (canBeControlled == false)
+        {
+            AudioManager.Instance.SetWallSliding(false);
             return;
+        }
 
         if (isKnocked)
+        {
+            AudioManager.Instance.SetWallSliding(false);
             return;
+        }
 
         HandleInput();
         HandleWallSlide();
@@ -137,6 +143,13 @@ public class Player : MonoBehaviour
         Destroy(gameObject);
     }
 
+    private void OnDisable()
+    {
+        // Kill the looping wall-slide sound if we're disabled/destroyed mid-slide
+        // (e.g. death), so it doesn't get stuck on after we're gone.
+        AudioManager.Instance.SetWallSliding(false);
+    }
+
     private void UpdateAirborneStatus()
     {
         if (isGrounded && isAirborne)
@@ -158,6 +171,8 @@ public class Player : MonoBehaviour
     {
         isAirborne = false;
         canDoubleJump = true;
+
+        AudioManager.Instance.PlayLand();
 
         AttemptBufferJump();
     }
@@ -255,6 +270,8 @@ public class Player : MonoBehaviour
     private void HandleWallSlide()
     {
         bool canWallSlide = isWallDetected && rb.linearVelocity.y < 0;
+        AudioManager.Instance.SetWallSliding(canWallSlide);
+
         float yModifier = yInput < 0 ? 1f : 0.5f;
 
         if (canWallSlide == false)

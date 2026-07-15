@@ -9,6 +9,9 @@ public class StartPoint : MonoBehaviour
         Player player = collision.GetComponent<Player>();
 
         if (player != null)
+        {
             anim.SetTrigger("activate");
+            AudioManager.Instance.PlayStartFlag();
+        }
     }
 }
