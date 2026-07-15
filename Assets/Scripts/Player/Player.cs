@@ -146,8 +146,10 @@ public class Player : MonoBehaviour
     private void OnDisable()
     {
         // Kill the looping wall-slide sound if we're disabled/destroyed mid-slide
-        // (e.g. death), so it doesn't get stuck on after we're gone.
-        AudioManager.Instance.SetWallSliding(false);
+        // (e.g. death), so it doesn't get stuck on after we're gone. Guard on Exists so
+        // this doesn't spawn a throwaway AudioManager while the scene is tearing down.
+        if (AudioManager.Exists)
+            AudioManager.Instance.SetWallSliding(false);
     }
 
     private void UpdateAirborneStatus()

@@ -59,6 +59,13 @@ public class AudioManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// True only if an instance already exists — accessing this never creates one.
+    /// Callers running during scene teardown (OnDisable/OnDestroy) should guard on this
+    /// so they don't lazily spawn a throwaway AudioManager while the scene is closing.
+    /// </summary>
+    public static bool Exists => instance != null;
+
     [Header("Audio Mixer (optional, for when audio is added)")]
     [Tooltip("Leave empty for now. When audio exists, assign a mixer with exposed " +
              "'MusicVolume' and 'SFXVolume' parameters and ApplyToMixer() will drive them.")]

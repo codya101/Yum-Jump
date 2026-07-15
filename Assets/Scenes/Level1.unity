@@ -388166,7 +388166,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: sawVolume
-      value: 0.5
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: maxDistance
@@ -389314,7 +389314,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: sawVolume
-      value: 0.5
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: maxDistance
@@ -389437,7 +389437,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: sawVolume
-      value: 0.5
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: maxDistance

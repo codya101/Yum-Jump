@@ -246,6 +246,9 @@ MonoBehaviour:
   - {fileID: 1359950427827582107}
   wayPointIndex: 1
   moveDirection: 1
+  sawVolume: 0.2
+  minDistance: 10
+  maxDistance: 24
 --- !u!1 &4573418381634654741
 GameObject:
   m_ObjectHideFlags: 0
