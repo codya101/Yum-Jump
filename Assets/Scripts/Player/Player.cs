@@ -49,6 +49,11 @@ public class Player : MonoBehaviour
     private bool facingRight = true;
     private int facingDir = 1;
 
+    [Header("Footstep Settings")]
+    [Tooltip("Seconds between footstep sounds while walking on the ground.")]
+    [SerializeField] private float footstepInterval = 0.3f;
+    private float footstepTimer;
+
     [Header("VFX")]
     [SerializeField] private GameObject deathVFX;
 
@@ -80,6 +85,7 @@ public class Player : MonoBehaviour
         HandleMovement();
         HandleFlip();
         HandleCollision();
+        HandleFootsteps();
         HandleAnimations();
     }
 
@@ -285,6 +291,27 @@ public class Player : MonoBehaviour
     {
         isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
         isWallDetected = Physics2D.Raycast(transform.position, Vector2.right * facingDir, wallCheckDistance, whatIsGround);
+    }
+
+    // Plays a footstep on a fixed cadence while the player is actually walking on the
+    // ground. Pushing into a wall (no real movement) or being airborne stays silent.
+    // The timer resets on stop so the first step after starting to move plays instantly.
+    private void HandleFootsteps()
+    {
+        bool isWalking = isGrounded && !isWallDetected && Mathf.Abs(rb.linearVelocity.x) > 0.1f;
+
+        if (!isWalking)
+        {
+            footstepTimer = 0f;
+            return;
+        }
+
+        footstepTimer -= Time.deltaTime;
+        if (footstepTimer <= 0f)
+        {
+            AudioManager.Instance.PlayFootstep();
+            footstepTimer = footstepInterval;
+        }
     }
 
     private void HandleAnimations()

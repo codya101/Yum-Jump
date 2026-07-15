@@ -280,6 +280,30 @@ public class AudioManager : MonoBehaviour
     public void PlayRespawn()     => PlaySfxRandom("SFX_Respawn_1", "SFX_Respawn_2");
     public void PlayMenuSelect()  => PlaySfxRandom("SFX_MenuSelect_1", "SFX_MenuSelect_2");
 
+    // ─── Footsteps ──────────────────────────────────────────────────────────────
+    // The imported "Footsteps - Essentials" pack keeps one folder per surface, each
+    // holding numbered "Walk" variants. Levels 1-3 are all wood, so PlayFootstep
+    // defaults to the wood set; when a level introduces new terrain, add a Surface
+    // value and a case below. Footsteps are scaled down so they sit under the other
+    // SFX instead of drowning them out.
+    public enum Surface { Wood }
+
+    private const string FootstepsRoot = "Footsteps - Essentials";
+    private const float FootstepVolume = 1.0f;
+
+    /// <summary>Plays one random walk step for the given surface (wood by default).</summary>
+    public void PlayFootstep(Surface surface = Surface.Wood)
+    {
+        switch (surface)
+        {
+            case Surface.Wood:
+                // 10 variants on disk: Footsteps_Wood_Walk_01 .. _10.
+                int n = Random.Range(1, 11);
+                PlaySfx($"{FootstepsRoot}/Footsteps_Wood/Footsteps_Wood_Walk/Footsteps_Wood_Walk_{n:00}", FootstepVolume);
+                break;
+        }
+    }
+
     /// <summary>
     /// Plays a one-shot SFX by clip name (file name in Assets/Resources/Audio,
     /// without extension), scaled by the current effective SFX volume.
