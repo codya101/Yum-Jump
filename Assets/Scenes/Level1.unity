@@ -388164,6 +388164,18 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0.01
       objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: sawVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: maxDistance
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: minDistance
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 4010601356768846353, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: m_Name
       value: Trap_Saw
@@ -389301,6 +389313,18 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: sawVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: maxDistance
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: minDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: wayPoints.Array.size
       value: 6
       objectReference: {fileID: 0}
@@ -389410,6 +389434,18 @@ PrefabInstance:
     - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: moveSpeed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: sawVolume
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: maxDistance
+      value: 24
+      objectReference: {fileID: 0}
+    - target: {fileID: 3927875795615311197, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
+      propertyPath: minDistance
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4010601356768846353, guid: 04f226620a413f3439fdb9525870ee27, type: 3}
       propertyPath: m_Name
@@ -389589,7 +389625,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 286334776443415937, guid: 27d4fd4249d7f7e4c87b3ca6e060d1b1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -73.71
+      value: -71.88
       objectReference: {fileID: 0}
     - target: {fileID: 286334776443415937, guid: 27d4fd4249d7f7e4c87b3ca6e060d1b1, type: 3}
       propertyPath: m_LocalPosition.y
