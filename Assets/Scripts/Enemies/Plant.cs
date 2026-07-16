@@ -12,6 +12,17 @@ public class Plant : MonoBehaviour
     [Header("Facing")]
     [SerializeField] private bool facingLeft = true;
 
+    [Header("Audio")]
+    [Tooltip("Loudness of the shot at full SFX volume, before the SFX slider scales it.")]
+    [SerializeField, Range(0f, 1f)] private float popVolume = 1f;
+    [Tooltip("Distance (world units) within which the shot is at full volume.")]
+    [SerializeField] private float minDistance = 6f;
+    [Tooltip("Distance (world units) beyond which the shot is silent — plants firing off here go unheard.")]
+    [SerializeField] private float maxDistance = 18f;
+    private const string PopClip = "Audio/SFX/SFX_Pop";
+    private static AudioClip popClip;
+    private AudioSource popSource;
+
     private Animator anim;
     private SpriteRenderer sr;
     private float nextAttackTime;
@@ -20,6 +31,24 @@ public class Plant : MonoBehaviour
     {
         anim = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();
+
+        SetupAudio();
+    }
+
+    // 3D one-shot source on the (stationary) plant, so a shot's volume falls off with the
+    // player's distance and plants firing far away/off-screen are inaudible. The clip is
+    // cached statically across all plants.
+    private void SetupAudio()
+    {
+        if (popClip == null) popClip = Resources.Load<AudioClip>(PopClip);
+
+        popSource = gameObject.AddComponent<AudioSource>();
+        popSource.playOnAwake = false;
+        popSource.spatialBlend = 1f;                 // 3D: only heard when the player is near.
+        popSource.rolloffMode = AudioRolloffMode.Linear;
+        popSource.minDistance = minDistance;
+        popSource.maxDistance = maxDistance;
+        popSource.dopplerLevel = 0f;
     }
 
     private void Start()
@@ -54,6 +83,10 @@ public class Plant : MonoBehaviour
         GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.identity);
         PlantBullet pb = bullet.GetComponent<PlantBullet>();
         if (pb != null) pb.Launch(facingLeft ? Vector2.left : Vector2.right, bulletSpeed);
+
+        // 3D rolloff scales this by distance, so out-of-range plants are silent.
+        if (popSource != null && popClip != null)
+            popSource.PlayOneShot(popClip, popVolume * AudioManager.Instance.EffectiveSfxVolume);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)

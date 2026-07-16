@@ -29,6 +29,7 @@ public class Trampoline : MonoBehaviour
 
         player.Bounce(bounceForce);
         anim.SetTrigger("bounce");
+        AudioManager.Instance.PlayTrampoline();
         lastBounceTime = Time.time;
     }
 }

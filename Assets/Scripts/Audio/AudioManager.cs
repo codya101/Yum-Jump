@@ -303,6 +303,8 @@ public class AudioManager : MonoBehaviour
     public void PlayMenuSelect()  => PlaySfxRandom("SFX_MenuSelect_1", "SFX_MenuSelect_2");
     public void PlayStartFlag()   => PlaySfx("SFX_Spring_Boing"); // arrow sign bend-and-flick
     public void PlayPigCharge()   => PlaySfx("SFX_Pig", 3f);      // AngryPig turns red and charges (clip is quiet, so 3x)
+    public void PlayTrampoline()  => PlaySfx("SFX_Trampoline_Trap"); // player bounces on a trampoline
+    public void PlayFallingPlatform() => PlaySfx("SFX_Falling_Platform"); // platform activates and starts to fall
 
     // ─── Footsteps ──────────────────────────────────────────────────────────────
     // The imported "Footsteps - Essentials" pack keeps one folder per surface, each

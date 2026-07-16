@@ -36,6 +36,7 @@ public class FallingPlatform : MonoBehaviour
 
         triggered = true;
         anim.SetTrigger("activate");
+        AudioManager.Instance.PlayFallingPlatform();
         StartCoroutine(FallAndRespawn());
     }
 
