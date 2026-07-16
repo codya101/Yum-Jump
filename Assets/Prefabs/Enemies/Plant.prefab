@@ -167,6 +167,9 @@ MonoBehaviour:
   attackInterval: 2.5
   bulletSpeed: 6
   facingLeft: 1
+  popVolume: 1
+  minDistance: 10
+  maxDistance: 24
 --- !u!1 &8480664671125763828
 GameObject:
   m_ObjectHideFlags: 0
