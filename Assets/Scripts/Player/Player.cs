@@ -42,6 +42,10 @@ public class Player : MonoBehaviour
     private bool isGrounded;
     private bool isAirborne;
     private bool isWallDetected;
+    private float airborneStartTime;
+    // A real jump/fall keeps the player airborne well past this; the rapid grounded/airborne
+    // flicker from riding a falling platform doesn't, so it's used to gate the landing sound.
+    private const float MinAirborneTimeForLandSound = 0.1f;
 
     private float xInput;
     private float yInput;
@@ -164,6 +168,7 @@ public class Player : MonoBehaviour
     private void BecomeAirborne()
     {
         isAirborne = true;
+        airborneStartTime = Time.time;
 
         if (rb.linearVelocity.y < 0)
             ActivateCoyoteJump();
@@ -174,7 +179,10 @@ public class Player : MonoBehaviour
         isAirborne = false;
         canDoubleJump = true;
 
-        AudioManager.Instance.PlayLand();
+        // Only after a genuine fall, not the frame-to-frame grounded/airborne flicker
+        // caused by riding a falling platform down (the ground ray keeps re-hitting it).
+        if (Time.time - airborneStartTime >= MinAirborneTimeForLandSound)
+            AudioManager.Instance.PlayLand();
 
         AttemptBufferJump();
     }
