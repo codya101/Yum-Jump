@@ -82,7 +82,13 @@ public class Trap_Saw : MonoBehaviour
         // the source then scales this by the player's distance. EffectiveSfxVolume folds
         // in the SFX slider + mute, so this stays in sync with the rest of the audio.
         if (sawSource != null)
+        {
+            // Re-apply the distances every frame so they can be tuned live in Play
+            // mode from the Inspector (they were previously only read once in Awake).
+            sawSource.minDistance = minDistance;
+            sawSource.maxDistance = maxDistance;
             sawSource.volume = (canMove ? sawVolume : 0f) * AudioManager.Instance.EffectiveSfxVolume;
+        }
 
         if (canMove == false)
             return;
@@ -113,5 +119,27 @@ public class Trap_Saw : MonoBehaviour
 
         canMove = true;
         //sr.flipX = !sr.flipX;
+    }
+
+    // Scene-view visualization of the audible range. The AudioListener rides the
+    // camera at z = -10, so the on-screen radius where the whir starts is
+    // sqrt(maxDistance² - 100), not maxDistance itself.
+    private void OnDrawGizmosSelected()
+    {
+        const float listenerZ = 10f;
+
+        float maxSq = maxDistance * maxDistance - listenerZ * listenerZ;
+        if (maxSq > 0f)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt(maxSq));
+        }
+
+        float minSq = minDistance * minDistance - listenerZ * listenerZ;
+        if (minSq > 0f)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(transform.position, Mathf.Sqrt(minSq));
+        }
     }
 }
