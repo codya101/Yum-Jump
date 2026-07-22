@@ -28,7 +28,7 @@ public class AudioManager : MonoBehaviour
     // Background music. Track names are file names (without extension) inside
     // MusicResourceFolder. Which track plays where is decided by TrackForScene().
     private const string MusicResourceFolder = "Audio/BGM/8Bit Music Album - 051321";
-    private const string LevelMusic = "1. Track 1"; // Level1 / Level2 / Level3
+    private const string LevelMusic = "1. Track 1"; // Level1 / Level2 / Level3 / Level4
     private const string MenuMusic  = "3. Track 3"; // MainMenu / TheEnd
 
     private const string MusicVolumeKey = "MusicVolume";
@@ -241,6 +241,7 @@ public class AudioManager : MonoBehaviour
             case "Level1":
             case "Level2":
             case "Level3":
+            case "Level4":
                 return LevelMusic;
             default:
                 return null;
