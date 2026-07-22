@@ -59,7 +59,9 @@ public class Trap_Saw : MonoBehaviour
     private void Start()
     {
         UpdateWaypointsInfo();
-        transform.position = wayPointPositions[0];
+
+        if (wayPointPositions.Length > 0)
+            transform.position = wayPointPositions[0];
     }
 
     private void UpdateWaypointsInfo()
@@ -83,6 +85,10 @@ public class Trap_Saw : MonoBehaviour
             sawSource.volume = (canMove ? sawVolume : 0f) * AudioManager.Instance.EffectiveSfxVolume;
 
         if (canMove == false)
+            return;
+
+        // Stationary saw: no path to follow, just spin and whir in place.
+        if (wayPointPositions.Length < 2)
             return;
 
         transform.position = Vector2.MoveTowards(transform.position, wayPointPositions[wayPointIndex], moveSpeed * Time.deltaTime);
