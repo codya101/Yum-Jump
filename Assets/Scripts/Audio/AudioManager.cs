@@ -309,46 +309,51 @@ public class AudioManager : MonoBehaviour
 
     // ─── Footsteps ──────────────────────────────────────────────────────────────
     // The imported "Footsteps - Essentials" pack keeps one folder per surface, each
-    // holding numbered "Walk" variants. Levels 1-3 are all wood, so PlayFootstep
-    // defaults to the wood set; when a level introduces new terrain, add a Surface
-    // value and a case below. Footsteps are scaled down so they sit under the other
-    // SFX instead of drowning them out.
-    public enum Surface { Wood }
+    // holding numbered "Walk" and "Jump" variants that share the surface's name prefix.
+    // Levels 1-3 are all wood, so the footstep calls default to the wood set; Level 4
+    // introduces sand. To add a surface: import its folder under the pack, add a Surface
+    // value, and map it in SurfaceFolder below. Footsteps are scaled down so they sit
+    // under the other SFX instead of drowning them out.
+    public enum Surface { Wood, Sand }
 
     private const string FootstepsRoot = "Footsteps - Essentials";
     private const float FootstepVolume = 1.0f;
 
-    // Alternates between the two clips below (left/right foot) rather than picking at
+    // The pack's folder/file prefix for a surface (e.g. "Footsteps_Wood" →
+    // Footsteps_Wood/Footsteps_Wood_Walk/Footsteps_Wood_Walk_01). Both the folder path
+    // and the clip names are built from this, so a new surface is a one-line addition.
+    private static string SurfaceFolder(Surface surface)
+    {
+        switch (surface)
+        {
+            case Surface.Sand: return "Footsteps_Sand";
+            default:           return "Footsteps_Wood";
+        }
+    }
+
+    // Alternates between the first two clips (left/right foot) rather than picking at
     // random, which sounded uneven. Flips 0 <-> 1 on each step.
     private int footstepIndex;
 
     /// <summary>Plays the next walk step for the given surface (wood by default),
-    /// cycling through a small set of clips so steps alternate like footfalls.</summary>
+    /// alternating two clips so steps sound like footfalls.</summary>
     public void PlayFootstep(Surface surface = Surface.Wood)
     {
-        switch (surface)
-        {
-            case Surface.Wood:
-                // Cycle Footsteps_Wood_Walk_01 <-> _02 for a steady left/right cadence.
-                int n = footstepIndex + 1;
-                footstepIndex = (footstepIndex + 1) % 2;
-                PlaySfx($"{FootstepsRoot}/Footsteps_Wood/Footsteps_Wood_Walk/Footsteps_Wood_Walk_{n:00}", FootstepVolume);
-                break;
-        }
+        // Cycle _Walk_01 <-> _02 for a steady left/right cadence.
+        int n = footstepIndex + 1;
+        footstepIndex = (footstepIndex + 1) % 2;
+        string folder = SurfaceFolder(surface);
+        PlaySfx($"{FootstepsRoot}/{folder}/{folder}_Walk/{folder}_Walk_{n:00}", FootstepVolume);
     }
 
     /// <summary>Plays a landing thud for the given surface (wood by default) — call
     /// this the moment the player touches down after being airborne.</summary>
     public void PlayLand(Surface surface = Surface.Wood)
     {
-        switch (surface)
-        {
-            case Surface.Wood:
-                // One-shot on landing, so a random pick of the two variants reads fine.
-                int n = Random.Range(1, 3); // 01 or 02
-                PlaySfx($"{FootstepsRoot}/Footsteps_Wood/Footsteps_Wood_Jump/Footsteps_Wood_Jump_Land_{n:00}", FootstepVolume);
-                break;
-        }
+        // One-shot on landing, so a random pick of the two variants reads fine.
+        string folder = SurfaceFolder(surface);
+        int n = Random.Range(1, 3); // 01 or 02
+        PlaySfx($"{FootstepsRoot}/{folder}/{folder}_Jump/{folder}_Jump_Land_{n:00}", FootstepVolume);
     }
 
     /// <summary>

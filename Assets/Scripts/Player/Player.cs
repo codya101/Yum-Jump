@@ -57,6 +57,10 @@ public class Player : MonoBehaviour
     [Tooltip("Seconds between footstep sounds while walking on the ground.")]
     [SerializeField] private float footstepInterval = 0.3f;
     private float footstepTimer;
+    // The surface underfoot, updated while grounded so footstep and landing SFX match
+    // the terrain. Sand tiles sit on their own tagged tilemap; anything else is wood.
+    private AudioManager.Surface currentSurface = AudioManager.Surface.Wood;
+    private const string SandTag = "Sand";
 
     [Header("VFX")]
     [SerializeField] private GameObject deathVFX;
@@ -182,7 +186,7 @@ public class Player : MonoBehaviour
         // Only after a genuine fall, not the frame-to-frame grounded/airborne flicker
         // caused by riding a falling platform down (the ground ray keeps re-hitting it).
         if (Time.time - airborneStartTime >= MinAirborneTimeForLandSound)
-            AudioManager.Instance.PlayLand();
+            AudioManager.Instance.PlayLand(currentSurface);
 
         AttemptBufferJump();
     }
@@ -316,8 +320,16 @@ public class Player : MonoBehaviour
 
     private void HandleCollision()
     {
-        isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        isGrounded = groundHit.collider != null;
         isWallDetected = Physics2D.Raycast(transform.position, Vector2.right * facingDir, wallCheckDistance, whatIsGround);
+
+        // Remember what we're standing on so the audio matches. Left unchanged while
+        // airborne, so the landing sound uses the surface we actually took off from.
+        if (isGrounded)
+            currentSurface = groundHit.collider.CompareTag(SandTag)
+                ? AudioManager.Surface.Sand
+                : AudioManager.Surface.Wood;
     }
 
     // Plays a footstep on a fixed cadence while the player is actually walking on the
@@ -336,7 +348,7 @@ public class Player : MonoBehaviour
         footstepTimer -= Time.deltaTime;
         if (footstepTimer <= 0f)
         {
-            AudioManager.Instance.PlayFootstep();
+            AudioManager.Instance.PlayFootstep(currentSurface);
             footstepTimer = footstepInterval;
         }
     }
