@@ -11,6 +11,7 @@ public class FallingPlatform : MonoBehaviour
     private Animator anim;
     private Vector3 startPosition;
     private bool triggered;
+    private Coroutine fallRoutine;
 
     private void Awake()
     {
@@ -37,7 +38,7 @@ public class FallingPlatform : MonoBehaviour
         triggered = true;
         anim.SetTrigger("activate");
         AudioManager.Instance.PlayFallingPlatform();
-        StartCoroutine(FallAndRespawn());
+        fallRoutine = StartCoroutine(FallAndRespawn());
     }
 
     private IEnumerator FallAndRespawn()
@@ -54,6 +55,15 @@ public class FallingPlatform : MonoBehaviour
 
     public void ResetPlatform()
     {
+        // Cancel any pending fall/respawn timer so an early reset (e.g. from a
+        // SoftRespawnZone) can't leave a stale coroutine that resets the platform
+        // again later — potentially yanking it out from under the player.
+        if (fallRoutine != null)
+        {
+            StopCoroutine(fallRoutine);
+            fallRoutine = null;
+        }
+
         rb.linearVelocity = Vector2.zero;
         rb.bodyType = RigidbodyType2D.Kinematic;
         transform.position = startPosition;
