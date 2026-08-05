@@ -14,7 +14,9 @@ public class SoftRespawnZone : MonoBehaviour
         Player player = collision.GetComponent<Player>();
         if (player != null)
         {
-            Destroy(player.gameObject);
+            // Same death feedback as a DeadZone: play the death SFX + VFX and destroy
+            // the player. Other objects (falling platforms) still just reset above.
+            player.Die();
             GameManager.instance.RespawnPlayer();
         }
     }
