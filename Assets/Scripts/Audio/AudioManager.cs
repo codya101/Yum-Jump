@@ -306,6 +306,7 @@ public class AudioManager : MonoBehaviour
     public void PlayPigCharge()   => PlaySfx("SFX_Pig", 3f);      // AngryPig turns red and charges (clip is quiet, so 3x)
     public void PlayTrampoline()  => PlaySfx("SFX_Trampoline_Trap"); // player bounces on a trampoline
     public void PlayFallingPlatform() => PlaySfx("SFX_Falling_Platform"); // platform activates and starts to fall
+    public void PlayBatScreech()  => PlaySfx("SFX_Bat_Screech"); // bat telegraph before it dives — the player's dodge cue
 
     // ─── Footsteps ──────────────────────────────────────────────────────────────
     // The imported "Footsteps - Essentials" pack keeps one folder per surface, each
