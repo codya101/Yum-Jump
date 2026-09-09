@@ -8,7 +8,7 @@ public class DamageTrigger : MonoBehaviour
 
         if (player != null)
         {
-            player.Die();
+            player.Die("hazard:" + name);
             GameManager.instance.RespawnPlayer();
         }
     }

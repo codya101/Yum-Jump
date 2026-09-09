@@ -1,7 +1,8 @@
 using UnityEngine;
+using YumJump.Agent;
 
 [RequireComponent(typeof(CapsuleCollider2D))]
-public class Plant : MonoBehaviour
+public class Plant : SimBehaviour
 {
     [Header("Attack")]
     [SerializeField] private GameObject bulletPrefab;
@@ -26,6 +27,7 @@ public class Plant : MonoBehaviour
     private Animator anim;
     private SpriteRenderer sr;
     private float nextAttackTime;
+    private int firedOnTick = -1;
 
     private void Awake()
     {
@@ -63,21 +65,38 @@ public class Plant : MonoBehaviour
                 firePoint.localPosition = lp;
             }
         }
-        nextAttackTime = Time.time + attackInterval;
+        nextAttackTime = SimClock.Time + attackInterval;
     }
 
-    private void Update()
+    public override SimKind Kind => SimKind.Enemy;
+
+    protected override object CaptureExtra() => nextAttackTime;
+
+    protected override void RestoreExtra(object extra)
     {
-        if (Time.time >= nextAttackTime)
-        {
-            anim.SetTrigger("attack");
-            nextAttackTime = Time.time + attackInterval;
-        }
+        nextAttackTime = extra is float f ? f : attackInterval;
     }
 
+    protected override void SimTick()
+    {
+        if (SimClock.Time < nextAttackTime) return;
+
+        anim.SetTrigger("attack");
+        nextAttackTime = SimClock.Time + attackInterval;
+
+        // Firing is normally driven by an animation event, and animation timing runs off the
+        // frame clock rather than the tick clock. In agent mode the shot leaves the tick itself,
+        // so a replay puts the bullet in the same place; the animation still plays for the look.
+        if (SimClock.ManualMode) Fire();
+    }
+
+    /// <summary>Animation event in normal play; called straight from the tick in agent mode.</summary>
     public void Fire()
     {
         if (bulletPrefab == null) return;
+        // Stops the animation event from doubling the tick-driven shot.
+        if (SimClock.ManualMode && firedOnTick == SimClock.Tick) return;
+        firedOnTick = SimClock.Tick;
 
         Vector3 origin = firePoint != null ? firePoint.position : transform.position;
         GameObject bullet = Instantiate(bulletPrefab, origin, Quaternion.identity);
@@ -94,7 +113,7 @@ public class Plant : MonoBehaviour
         Player playerComp = collision.collider.GetComponent<Player>();
         if (playerComp != null)
         {
-            playerComp.Die();
+            playerComp.Die("enemy:" + SimId);
             GameManager.instance.RespawnPlayer();
         }
     }

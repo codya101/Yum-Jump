@@ -1,6 +1,7 @@
 using UnityEngine;
+using YumJump.Agent;
 
-public class PlantBullet : MonoBehaviour
+public class PlantBullet : SimBehaviour
 {
     [SerializeField] private float lifetime = 4f;
     [SerializeField] private GameObject impactVFX;
@@ -10,6 +11,7 @@ public class PlantBullet : MonoBehaviour
     private Vector2 direction;
     private float speed;
     private float radius;
+    private float ageSeconds;
 
     private void Awake()
     {
@@ -30,12 +32,23 @@ public class PlantBullet : MonoBehaviour
         SpriteRenderer renderer = GetComponentInChildren<SpriteRenderer>();
         if (renderer != null && direction.x > 0) renderer.flipX = true;
 
-        Destroy(gameObject, lifetime);
+        ageSeconds = 0f;
     }
 
-    private void Update()
+    public override SimKind Kind => SimKind.Hazard;
+
+    protected override void SimTick()
     {
-        float step = speed * Time.deltaTime;
+        // Timed Destroy runs off the engine clock, so the bullet ages in sim time instead and
+        // its whole life stays tick-quantized.
+        ageSeconds += SimClock.DeltaTime;
+        if (ageSeconds >= lifetime)
+        {
+            DestroySelf();
+            return;
+        }
+
+        float step = speed * SimClock.DeltaTime;
 
         // Destroy on solid terrain (incl. tower walls) before passing through it.
         // A raycast is used rather than physics triggers because the bullet moves
@@ -59,7 +72,7 @@ public class PlantBullet : MonoBehaviour
             Player player = collision.GetComponent<Player>();
             if (player != null)
             {
-                player.Die();
+                player.Die("hazard:" + SimId);
                 GameManager.instance.RespawnPlayer();
             }
             DestroySelf();

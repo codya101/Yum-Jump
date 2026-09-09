@@ -1,9 +1,10 @@
 using System.Collections;
 using UnityEngine;
+using YumJump.Agent;
 
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
-public class AngryPig : MonoBehaviour, IStompable
+public class AngryPig : SimBehaviour, IStompable
 {
     [Header("Patrol")]
     [SerializeField] private Transform[] waypoints;
@@ -39,7 +40,7 @@ public class AngryPig : MonoBehaviour, IStompable
     private int currentWaypointIndex;
     private bool isDead;
     private Coroutine idleCoroutine;
-    private readonly WaitForSeconds despawnWait = new(0.5f);
+    private const float DespawnDelay = 0.5f;
 
     private enum State { Patrolling, Idle, Chasing, Returning }
     private State state = State.Patrolling;
@@ -65,7 +66,32 @@ public class AngryPig : MonoBehaviour, IStompable
             waypointPositions[i] = waypoints[i].position;
     }
 
-    private void Update()
+    public override SimKind Kind => SimKind.Enemy;
+
+    /// <summary>Patrol/chase state that a transform-only restore cannot recover.</summary>
+    private sealed class PigState
+    {
+        public int waypointIndex;
+        public State state;
+        public bool isDead;
+    }
+
+    protected override object CaptureExtra() =>
+        new PigState { waypointIndex = currentWaypointIndex, state = state, isDead = isDead };
+
+    protected override void RestoreExtra(object extra)
+    {
+        if (extra is PigState s)
+        {
+            currentWaypointIndex = s.waypointIndex;
+            state = s.state;
+            isDead = s.isDead;
+        }
+        idleCoroutine = null;
+        FindPlayer();
+    }
+
+    protected override void SimTick()
     {
         if (isDead) return;
 
@@ -115,7 +141,7 @@ public class AngryPig : MonoBehaviour, IStompable
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         SetAnimator(isWalking: false, seesPlayer: false, reachedWayPoint: true);
 
-        yield return new WaitForSeconds(idleTimeAtWaypoint);
+        yield return SimClock.Wait(idleTimeAtWaypoint);
 
         currentWaypointIndex = (currentWaypointIndex + 1) % waypoints.Length;
         state = State.Patrolling;
@@ -263,7 +289,7 @@ public class AngryPig : MonoBehaviour, IStompable
         Player playerComp = collision.collider.GetComponent<Player>();
         if (playerComp != null)
         {
-            playerComp.Die();
+            playerComp.Die("enemy:" + SimId);
             GameManager.instance.RespawnPlayer();
         }
     }
@@ -294,9 +320,10 @@ public class AngryPig : MonoBehaviour, IStompable
 
     private IEnumerator DespawnAfterHit()
     {
-        yield return despawnWait;
+        yield return SimClock.Wait(DespawnDelay);
         Instantiate(deathVFX, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        SimEvents.ReportEnemyKilled(SimId);
+        SimObjects.Despawn(gameObject);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using YumJump.Agent;
 
 /// <summary>
 /// Ceiling bat. Hangs upside-down at its perch (harmless) until the player enters
@@ -12,7 +13,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Rigidbody2D))]
 [RequireComponent(typeof(CapsuleCollider2D))]
-public class Bat : MonoBehaviour, IStompable
+public class Bat : SimBehaviour, IStompable
 {
     [Header("Detection")]
     [Tooltip("Size of the box (world units) the player must enter to trigger a dive. Drawn as a yellow gizmo.")]
@@ -55,8 +56,7 @@ public class Bat : MonoBehaviour, IStompable
     private Vector2 perchPosition;
     private float nextDiveTime;
     private bool isDead;
-    private readonly WaitForSeconds despawnWait = new(0.5f);
-    private readonly WaitForFixedUpdate waitFixed = new();
+    private const float DespawnDelay = 0.5f;
 
     private enum State { Perched, Alert, Diving, Recovering }
     private State state = State.Perched;
@@ -98,7 +98,33 @@ public class Bat : MonoBehaviour, IStompable
         FindPlayer();
     }
 
-    private void Update()
+    public override SimKind Kind => SimKind.Enemy;
+
+    /// <summary>Dive cooldown, flight state and perch - none of it lives in the transform.</summary>
+    private sealed class BatState
+    {
+        public float nextDiveTime;
+        public State state;
+        public bool isDead;
+        public Vector2 perch;
+    }
+
+    protected override object CaptureExtra() =>
+        new BatState { nextDiveTime = nextDiveTime, state = state, isDead = isDead, perch = perchPosition };
+
+    protected override void RestoreExtra(object extra)
+    {
+        if (extra is BatState s)
+        {
+            nextDiveTime = s.nextDiveTime;
+            state = s.state;
+            isDead = s.isDead;
+            perchPosition = s.perch;
+        }
+        FindPlayer();
+    }
+
+    protected override void SimTick()
     {
         if (isDead) return;
 
@@ -108,7 +134,7 @@ public class Bat : MonoBehaviour, IStompable
             return;
         }
 
-        if (state == State.Perched && Time.time >= nextDiveTime && PlayerInDetectionBox())
+        if (state == State.Perched && SimClock.Time >= nextDiveTime && PlayerInDetectionBox())
             StartCoroutine(AttackSequence());
     }
 
@@ -122,7 +148,7 @@ public class Bat : MonoBehaviour, IStompable
         AudioManager.Instance.PlayBatScreech();
         if (player != null)
             FaceTravelDirection(player.position.x - rb.position.x);
-        yield return new WaitForSeconds(alertDuration);
+        yield return SimClock.Wait(alertDuration);
 
         // Dive — arc to where the player is right now. Snapshot, not homing: the
         // player dodges by moving during the dive.
@@ -144,7 +170,7 @@ public class Bat : MonoBehaviour, IStompable
         rb.MovePosition(perchPosition);
         state = State.Perched;
         SetAnimState(AnimPerched);
-        nextDiveTime = Time.time + diveCooldown;
+        nextDiveTime = SimClock.Time + diveCooldown;
     }
 
     /// <summary>Flies a quadratic bezier from <paramref name="from"/> to
@@ -160,7 +186,7 @@ public class Bat : MonoBehaviour, IStompable
 
         while (elapsed < duration)
         {
-            elapsed += Time.fixedDeltaTime;
+            elapsed += SimClock.FixedDelta;
 
             if (landingAnimLead >= 0f && duration - elapsed <= landingAnimLead)
             {
@@ -172,7 +198,7 @@ public class Bat : MonoBehaviour, IStompable
             rb.MovePosition(next);
             FaceTravelDirection(next.x - prev.x);
             prev = next;
-            yield return waitFixed;
+            yield return SimClock.WaitStep();
         }
     }
 
@@ -215,7 +241,7 @@ public class Bat : MonoBehaviour, IStompable
         Player playerComp = collision.collider.GetComponent<Player>();
         if (playerComp != null)
         {
-            playerComp.Die();
+            playerComp.Die("enemy:" + SimId);
             GameManager.instance.RespawnPlayer();
         }
     }
@@ -245,9 +271,10 @@ public class Bat : MonoBehaviour, IStompable
 
     private IEnumerator DespawnAfterHit()
     {
-        yield return despawnWait;
+        yield return SimClock.Wait(DespawnDelay);
         Instantiate(deathVFX, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        SimEvents.ReportEnemyKilled(SimId);
+        SimObjects.Despawn(gameObject);
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

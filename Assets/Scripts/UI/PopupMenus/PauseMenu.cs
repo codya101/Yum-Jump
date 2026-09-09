@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using YumJump.Agent;
 
 /// <summary>
 /// ESC-toggled pause menu. Lives on the (repurposed) FruitContainer object so it
@@ -54,6 +55,12 @@ public class PauseMenu : MonoBehaviour
 
     private void Update()
     {
+        // The agent server drives the world itself and pausing sets Time.timeScale to 0, which
+        // would stall its plan mid-flight and look to it like the game had hung. A human
+        // watching a run still has the window focused and a stray Tab is easy to hit, so in
+        // agent mode the menu simply does not open.
+        if (SimClock.ManualMode) return;
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
             // While the Settings sub-menu is up, let it own the input; its own

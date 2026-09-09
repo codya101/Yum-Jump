@@ -8,7 +8,7 @@ public class DeadZone : MonoBehaviour
 
         if (player != null)
         {
-            player.Die();
+            player.Die("fell_out_of_bounds");
             GameManager.instance.RespawnPlayer();
         }
     }

@@ -1,10 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using YumJump.Agent;
 
-public class GameManager : MonoBehaviour
+public class GameManager : SimBehaviour
 {
     public static GameManager instance;
+
+    /// <summary>The prefab the agent server re-instantiates on reset.</summary>
+    public GameObject PlayerPrefabRef => playerPrefab;
+
+    /// <summary>Where the player currently respawns (start flag, or the last checkpoint).</summary>
+    public Transform RespawnPointRef => respawnPoint;
+
+    public override SimKind Kind => SimKind.None;
 
     [Header("Player")]
     [SerializeField] private GameObject playerPrefab;
@@ -55,10 +64,33 @@ public class GameManager : MonoBehaviour
         CollectFruitsInfo();
     }
 
-    private void Update()
+    protected override void SimTick()
     {
         if (levelTimerRunning)
-            levelTime += Time.deltaTime;
+            levelTime += SimClock.DeltaTime;
+    }
+
+    /// <summary>Puts run progress back to what it was in the snapshot being restored.</summary>
+    public void AgentRestoreProgress(int restoredScore, int restoredFruits,
+                                     Dictionary<FruitType, int> restoredFruitsByType)
+    {
+        score = restoredScore;
+        fruitsCollected = restoredFruits;
+
+        // Rolled back with the other tallies: the fruits themselves come back on a reset, so a
+        // per-type count that kept accumulating would drift out of step with fruitsCollected and
+        // report more of a type than the level contains. Refilled in place rather than replaced,
+        // so anything holding the dictionary keeps seeing the live counts.
+        fruitsCollectedByType.Clear();
+        if (restoredFruitsByType != null)
+        {
+            foreach (KeyValuePair<FruitType, int> entry in restoredFruitsByType)
+                fruitsCollectedByType[entry.Key] = entry.Value;
+        }
+
+        levelTime = 0f;
+        levelTimerRunning = true;
+        isRespawning = false;
     }
 
     /// <summary>Freezes the level timer (called when the finish is reached).</summary>
@@ -98,6 +130,10 @@ public class GameManager : MonoBehaviour
 
     public void RespawnPlayer()
     {
+        // In agent mode the server owns respawning: it happens on reset, at a known tick,
+        // with the rest of the world restored to match.
+        if (SimClock.ManualMode) return;
+
         if (isRespawning) return;
         StartCoroutine(RespawnCoroutine());
     }
@@ -105,7 +141,7 @@ public class GameManager : MonoBehaviour
     private IEnumerator RespawnCoroutine()
     {
         isRespawning = true;
-        yield return new WaitForSeconds(respawnDelay);
+        yield return SimClock.Wait(respawnDelay);
 
         GameObject newPlayer = Instantiate(playerPrefab, respawnPoint.position, Quaternion.identity);
         player = newPlayer.GetComponent<Player>();

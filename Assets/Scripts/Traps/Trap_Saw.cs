@@ -1,7 +1,7 @@
-using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
+using YumJump.Agent;
 
-public class Trap_Saw : MonoBehaviour
+public class Trap_Saw : SimBehaviour
 {
     private Animator anim;
     private SpriteRenderer sr;
@@ -13,7 +13,21 @@ public class Trap_Saw : MonoBehaviour
 
     public int wayPointIndex = 1;
     public int moveDirection = 1;
-    private bool canMove = true;
+    // Sim time left parked at a waypoint. This used to be a coroutine holding `canMove` false
+    // across a SimClock.Wait, which does not survive a snapshot: SimBehaviour.Restore calls
+    // StopAllCoroutines and nothing re-armed it, so a blade captured mid-park came back with
+    // canMove false and never moved again - freezing it into a permanent wall for every run
+    // resumed from that checkpoint. Counting the park down here instead keeps all of the
+    // blade's timing inside CaptureExtra/RestoreExtra, where a reset can restore it.
+    //
+    // Seconds rather than ticks because SimTick runs once per *rendered frame* in normal
+    // play: a frame counter would dwell 30 frames, which is the authored 0.5s at 60Hz but
+    // half that at 120Hz. In agent mode DeltaTime is FixedDelta, so this stays exactly
+    // tick-quantized and the park is the same integer number of ticks every replay.
+    private float parkSecondsLeft;
+
+    /// <summary>Parked blades neither move nor whir; the park is counted in sim time.</summary>
+    private bool CanMove => parkSecondsLeft <= 0f;
 
     [Header("Audio")]
     [Tooltip("Loudness of the saw whir at full SFX volume, before the SFX slider scales it. " +
@@ -36,7 +50,7 @@ public class Trap_Saw : MonoBehaviour
     }
 
     // 3D looping whir that follows the saw, so its volume falls off with the player's
-    // distance (like the fan wind). Gated on canMove in Update so it goes quiet while the
+    // distance (like the fan wind). Gated on CanMove in SimTick so it goes quiet while the
     // blade is parked at a waypoint. The clip is cached statically across all saws.
     private void SetupAudio()
     {
@@ -74,9 +88,11 @@ public class Trap_Saw : MonoBehaviour
         }
     }
 
-    private void Update()
+    public override SimKind Kind => SimKind.Hazard;
+
+    protected override void SimTick()
     {
-        anim.SetBool("active", canMove);
+        anim.SetBool("active", CanMove);
 
         // Whir only while the blade is moving; silent while parked. The 3D rolloff on
         // the source then scales this by the player's distance. EffectiveSfxVolume folds
@@ -87,38 +103,60 @@ public class Trap_Saw : MonoBehaviour
             // mode from the Inspector (they were previously only read once in Awake).
             sawSource.minDistance = minDistance;
             sawSource.maxDistance = maxDistance;
-            sawSource.volume = (canMove ? sawVolume : 0f) * AudioManager.Instance.EffectiveSfxVolume;
+            sawSource.volume = (CanMove ? sawVolume : 0f) * AudioManager.Instance.EffectiveSfxVolume;
         }
 
-        if (canMove == false)
+        if (parkSecondsLeft > 0f)
+        {
+            // A step of the park spent. Counting it here rather than at the top of SimTick
+            // keeps the park equal to the coroutine's: the blade stays still for `cooldown`
+            // seconds of sim time and moves again on the step after.
+            parkSecondsLeft -= SimClock.DeltaTime;
             return;
+        }
 
         // Stationary saw: no path to follow, just spin and whir in place.
         if (wayPointPositions.Length < 2)
             return;
 
-        transform.position = Vector2.MoveTowards(transform.position, wayPointPositions[wayPointIndex], moveSpeed * Time.deltaTime);
+        transform.position = Vector2.MoveTowards(transform.position, wayPointPositions[wayPointIndex], moveSpeed * SimClock.DeltaTime);
 
         if (Vector2.Distance(transform.position, wayPointPositions[wayPointIndex]) < 0.1f)
         {
             if (wayPointIndex == wayPointPositions.Length - 1 || wayPointIndex == 0)
             {
                 moveDirection *= -1;
-                StartCoroutine(StopMovement(cooldown));
+                parkSecondsLeft = cooldown;
             }
 
             wayPointIndex += moveDirection;
         }
     }
 
-    private IEnumerator StopMovement(float delay)
+    /// <summary>Path state a transform-only restore would miss.</summary>
+    private sealed class State
     {
-        canMove = false;
+        public int wayPointIndex;
+        public int moveDirection;
+        public float parkSecondsLeft;
+    }
 
-        yield return new WaitForSeconds(delay);
+    protected override object CaptureExtra() =>
+        new State
+        {
+            wayPointIndex = wayPointIndex,
+            moveDirection = moveDirection,
+            parkSecondsLeft = parkSecondsLeft,
+        };
 
-        canMove = true;
-        //sr.flipX = !sr.flipX;
+    protected override void RestoreExtra(object extra)
+    {
+        if (extra is State s)
+        {
+            wayPointIndex = s.wayPointIndex;
+            moveDirection = s.moveDirection;
+            parkSecondsLeft = s.parkSecondsLeft;
+        }
     }
 
     // Scene-view visualization of the audible range. The AudioListener rides the

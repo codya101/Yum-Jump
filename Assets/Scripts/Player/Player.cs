@@ -2,8 +2,9 @@ using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using YumJump.Agent;
 
-public class Player : MonoBehaviour
+public class Player : SimBehaviour
 {
     private Rigidbody2D rb;
     private Animator anim;
@@ -65,20 +66,36 @@ public class Player : MonoBehaviour
     [Header("VFX")]
     [SerializeField] private GameObject deathVFX;
 
+    // --- Observability for the agent server. Physics truth, never render-interpolated state. ---
+    public override SimKind Kind => SimKind.Player;
+    public bool IsGrounded => isGrounded;
+    public bool IsWallDetected => isWallDetected;
+    public bool CanDoubleJumpNow => canDoubleJump;
+    public int FacingDirection => facingDir;
+    public float MoveSpeed => moveSpeed;
+    public float JumpForce => jumpForce;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         cd = GetComponent<CapsuleCollider2D>();
         anim = GetComponentInChildren<Animator>();
+
+        // Read from the prefab in Awake, not Start: the agent server spawns the player and
+        // hands over control in the same frame, which is before Start runs. Reading it later
+        // would capture whatever gravity that handover had already set.
+        defaultGravityScale = rb.gravityScale;
     }
 
     private void Start()
     {
-        defaultGravityScale = rb.gravityScale;
-        RespawnFinished(false);
+        // Normal play waits for the respawn animation event to hand over control. In agent
+        // mode there is no animation in the loop, so control starts immediately and this stays
+        // idempotent no matter which order Start and the server's spawn call happen in.
+        RespawnFinished(SimClock.ManualMode);
     }
 
-    private void Update()
+    protected override void SimTick()
     {
         UpdateAirborneStatus();
 
@@ -138,21 +155,28 @@ public class Player : MonoBehaviour
         isKnocked = true;
         anim.SetBool("isKnocked", true);
 
-        yield return new WaitForSeconds(knockbackDuration);
+        yield return SimClock.Wait(knockbackDuration);
 
         isKnocked = false;
         anim.SetBool("isKnocked", false);
     }
 
-    public void Die()
+    /// <summary>
+    /// Kills the player. <paramref name="cause"/> is reported verbatim to the agent (e.g.
+    /// "hazard:saw_2"), which is what turns a death into a usable learning signal.
+    /// </summary>
+    public void Die(string cause = null)
     {
+        SimEvents.ReportDeath(cause);
         AudioManager.Instance.PlayDeath();
         GameObject newDeathVFX = Instantiate(deathVFX, transform.position, Quaternion.identity);
         Destroy(gameObject);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
+
         // Kill the looping wall-slide sound if we're disabled/destroyed mid-slide
         // (e.g. death), so it doesn't get stuck on after we're gone. Guard on Exists so
         // this doesn't spawn a throwaway AudioManager while the scene is tearing down.
@@ -172,7 +196,7 @@ public class Player : MonoBehaviour
     private void BecomeAirborne()
     {
         isAirborne = true;
-        airborneStartTime = Time.time;
+        airborneStartTime = SimClock.Time;
 
         if (rb.linearVelocity.y < 0)
             ActivateCoyoteJump();
@@ -185,7 +209,7 @@ public class Player : MonoBehaviour
 
         // Only after a genuine fall, not the frame-to-frame grounded/airborne flicker
         // caused by riding a falling platform down (the ground ray keeps re-hitting it).
-        if (Time.time - airborneStartTime >= MinAirborneTimeForLandSound)
+        if (SimClock.Time - airborneStartTime >= MinAirborneTimeForLandSound)
             AudioManager.Instance.PlayLand(currentSurface);
 
         AttemptBufferJump();
@@ -193,10 +217,10 @@ public class Player : MonoBehaviour
 
     private void HandleInput()
     {
-        xInput = Input.GetAxisRaw("Horizontal");
-        yInput = Input.GetAxisRaw("Vertical");
+        xInput = GameInput.Horizontal;
+        yInput = GameInput.Vertical;
 
-        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
+        if (GameInput.JumpPressed)
         {
             JumpButton();
             RequestBufferJump();
@@ -207,23 +231,23 @@ public class Player : MonoBehaviour
     private void RequestBufferJump()
     {
         if (isAirborne)
-            bufferJumpActivated = Time.time;
+            bufferJumpActivated = SimClock.Time;
     }
     private void AttemptBufferJump()
     {
-        if (Time.time < bufferJumpActivated + bufferJumpWindow)
+        if (SimClock.Time < bufferJumpActivated + bufferJumpWindow)
         {
-            bufferJumpActivated = Time.time - 1;
+            bufferJumpActivated = SimClock.Time - 1;
             Jump();
         }
     }
-    private void ActivateCoyoteJump() => coyoteJumpActivated = Time.time;
-    private void CancelCoyoteJump() => coyoteJumpActivated = Time.time - 1;
+    private void ActivateCoyoteJump() => coyoteJumpActivated = SimClock.Time;
+    private void CancelCoyoteJump() => coyoteJumpActivated = SimClock.Time - 1;
     #endregion
 
     private void JumpButton()
     {
-        bool coyoteJumpAvailable = Time.time < coyoteJumpActivated + coyoteJumpWindow;
+        bool coyoteJumpAvailable = SimClock.Time < coyoteJumpActivated + coyoteJumpWindow;
 
         if (isGrounded || coyoteJumpAvailable)
         {
@@ -277,7 +301,7 @@ public class Player : MonoBehaviour
     private IEnumerator WallJumpRoutine()
     {
         isWallJumping = true;
-        yield return new WaitForSeconds(wallJumpDuration);
+        yield return SimClock.Wait(wallJumpDuration);
         isWallJumping = false;
     }
 
@@ -318,6 +342,9 @@ public class Player : MonoBehaviour
         facingRight = !facingRight;
     }
 
+    /// <summary>Re-evaluates the ground/wall rays, so a freshly spawned player reports truth.</summary>
+    public void RefreshCollisionState() => HandleCollision();
+
     private void HandleCollision()
     {
         RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
@@ -345,7 +372,7 @@ public class Player : MonoBehaviour
             return;
         }
 
-        footstepTimer -= Time.deltaTime;
+        footstepTimer -= SimClock.DeltaTime;
         if (footstepTimer <= 0f)
         {
             AudioManager.Instance.PlayFootstep(currentSurface);

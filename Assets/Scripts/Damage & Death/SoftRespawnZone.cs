@@ -16,7 +16,7 @@ public class SoftRespawnZone : MonoBehaviour
         {
             // Same death feedback as a DeadZone: play the death SFX + VFX and destroy
             // the player. Other objects (falling platforms) still just reset above.
-            player.Die();
+            player.Die("fell_out_of_bounds");
             GameManager.instance.RespawnPlayer();
         }
     }

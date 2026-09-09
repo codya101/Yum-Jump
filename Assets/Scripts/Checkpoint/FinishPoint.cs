@@ -1,14 +1,26 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using YumJump.Agent;
 
-public class FinishPoint : MonoBehaviour
+public class FinishPoint : SimBehaviour
 {
     [SerializeField] private string nextSceneName;
     [SerializeField] private int requiredScore;
 
     private Animator anim => GetComponent<Animator>();
     private bool isTriggered;
+
+    public override SimKind Kind => SimKind.None;
+
+    protected override void SimTick() { }
+
+    protected override object CaptureExtra() => isTriggered;
+
+    protected override void RestoreExtra(object extra)
+    {
+        isTriggered = extra is bool b && b;
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -19,13 +31,18 @@ public class FinishPoint : MonoBehaviour
         if (player != null)
         {
             isTriggered = true;
+            SimEvents.ReportLevelEnd();
             // Freeze the run time the moment the finish is reached, before the
             // activation animation plays out.
             if (GameManager.instance != null)
                 GameManager.instance.StopLevelTimer();
             anim.SetTrigger("activate");
             AudioManager.Instance.PlayFinish();
-            StartCoroutine(ShowPopupRoutine());
+
+            // The completion popup pauses the game and waits on animation length; in agent
+            // mode the reported level_end terminal is the whole story.
+            if (!SimClock.ManualMode)
+                StartCoroutine(ShowPopupRoutine());
         }
     }
 

@@ -1,7 +1,8 @@
 using System.Collections;
 using UnityEngine;
+using YumJump.Agent;
 
-public class FallingPlatform : MonoBehaviour
+public class FallingPlatform : SimBehaviour
 {
     [SerializeField] private float shakeDuration = 0.6f;
     [SerializeField] private float respawnDelay = 3f;
@@ -12,6 +13,20 @@ public class FallingPlatform : MonoBehaviour
     private Vector3 startPosition;
     private bool triggered;
     private Coroutine fallRoutine;
+
+    public override SimKind Kind => SimKind.MovingPlatform;
+
+    // Nothing to do per tick: the platform is driven by physics and its fall coroutine.
+    protected override void SimTick() { }
+
+    /// <summary>Whether the platform has already been knocked loose.</summary>
+    protected override object CaptureExtra() => triggered;
+
+    protected override void RestoreExtra(object extra)
+    {
+        triggered = extra is bool b && b;
+        fallRoutine = null;
+    }
 
     private void Awake()
     {
@@ -43,12 +58,12 @@ public class FallingPlatform : MonoBehaviour
 
     private IEnumerator FallAndRespawn()
     {
-        yield return new WaitForSeconds(shakeDuration);
+        yield return SimClock.Wait(shakeDuration);
 
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = fallGravityScale;
 
-        yield return new WaitForSeconds(respawnDelay);
+        yield return SimClock.Wait(respawnDelay);
 
         ResetPlatform();
     }

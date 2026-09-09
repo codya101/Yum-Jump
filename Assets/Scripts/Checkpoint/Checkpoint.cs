@@ -1,11 +1,23 @@
 using UnityEngine;
+using YumJump.Agent;
 
-public class Checkpoint : MonoBehaviour
+public class Checkpoint : SimBehaviour
 {
     private Animator anim => GetComponent<Animator>();
     private bool isActive;
 
     [SerializeField] private bool canBeReactivated;
+
+    public override SimKind Kind => SimKind.None;   // static: it lives in the map, not the dynamics list
+
+    protected override void SimTick() { }
+
+    protected override object CaptureExtra() => isActive;
+
+    protected override void RestoreExtra(object extra)
+    {
+        isActive = extra is bool b && b;
+    }
 
     private void Start()
     {
@@ -29,5 +41,10 @@ public class Checkpoint : MonoBehaviour
         anim.SetTrigger("activate");
         AudioManager.Instance.PlayCheckpoint();
         GameManager.instance.UpdateRespawnPosition(transform);
+
+        // Tell the agent, and have the server snapshot the whole world at this moment so a
+        // later reset to this checkpoint restores hazard phases too, not just the player.
+        SimEvents.ReportCheckpoint(SimId);
+        ResetController.RequestCheckpointCapture(SimId, transform);
     }
 }
