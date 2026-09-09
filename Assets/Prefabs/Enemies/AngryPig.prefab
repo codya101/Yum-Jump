@@ -152,7 +152,7 @@ MonoBehaviour:
   idleTimeAtWaypoint: 2
   waypointReachedDistance: 0.2
   runSpeed: 4.5
-  detectionRange: 7
+  detectionRange: 5
   losePlayerRange: 7
   eyeLevelTolerance: 0.5
   deathVFX: {fileID: 6921059573154287674, guid: d6933dc796b6bf14a9b0d1200563be82, type: 3}

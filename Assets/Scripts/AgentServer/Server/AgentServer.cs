@@ -59,6 +59,8 @@ namespace YumJump.Agent
         private VirtualInput virtualInput;
         private PlanExecutor executor;
         private float restoreListenerVolume = 1f;
+        private int restoreVSyncCount = 1;
+        private int restoreTargetFrameRate = -1;
         private bool initialised;
         private bool tickedThisFrame;
         private float speedScale = 1f;
@@ -90,6 +92,8 @@ namespace YumJump.Agent
             if (!AgentBootstrap.AudioEnabled)
                 AudioListener.volume = 0f;
 
+            restoreVSyncCount = QualitySettings.vSyncCount;
+            restoreTargetFrameRate = Application.targetFrameRate;
             ApplySpeed(1f);
         }
 
@@ -139,6 +143,8 @@ namespace YumJump.Agent
             StopListening();
             GameInput.UseKeyboard();
             AudioListener.volume = restoreListenerVolume;
+            QualitySettings.vSyncCount = restoreVSyncCount;
+            Application.targetFrameRate = restoreTargetFrameRate;
             SimClock.ExitManualMode();
             Physics2D.simulationMode = SimulationMode2D.FixedUpdate;
             if (Instance == this) Instance = null;

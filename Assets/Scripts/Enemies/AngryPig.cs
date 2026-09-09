@@ -42,6 +42,12 @@ public class AngryPig : SimBehaviour, IStompable
     private Coroutine idleCoroutine;
     private const float DespawnDelay = 0.5f;
 
+    // Chase entry can re-trigger in quick bursts when the player sits right at the edge of the
+    // detection ranges or line-of-sight flickers; stacked copies of the charge SFX clip into a
+    // distorted blast, so the sound is rate-limited independently of the state machine.
+    private const float ChargeSfxCooldown = 1f;
+    private float lastChargeSfxTime = float.NegativeInfinity;
+
     private enum State { Patrolling, Idle, Chasing, Returning }
     private State state = State.Patrolling;
 
@@ -192,7 +198,11 @@ public class AngryPig : SimBehaviour, IStompable
                 idleCoroutine = null;
             }
             state = State.Chasing;
-            AudioManager.Instance.PlayPigCharge(); // pig turns red and charges
+            if (SimClock.Time - lastChargeSfxTime >= ChargeSfxCooldown)
+            {
+                lastChargeSfxTime = SimClock.Time;
+                AudioManager.Instance.PlayPigCharge(); // pig turns red and charges
+            }
         }
     }
 

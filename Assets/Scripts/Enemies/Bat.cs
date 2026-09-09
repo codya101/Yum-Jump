@@ -186,7 +186,9 @@ public class Bat : SimBehaviour, IStompable
 
         while (elapsed < duration)
         {
-            elapsed += SimClock.FixedDelta;
+            // Real frame time in normal play, one exact tick in agent mode — a fixed 1/60
+            // here would tie the flight speed to the monitor's refresh rate.
+            elapsed += SimClock.DeltaTime;
 
             if (landingAnimLead >= 0f && duration - elapsed <= landingAnimLead)
             {

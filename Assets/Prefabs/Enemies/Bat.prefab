@@ -228,9 +228,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   alertDuration: 0.25
-  diveSpeed: 10
+  diveSpeed: 6
   diveArcDepth: 1.5
-  recoverDuration: 1.75
+  recoverDuration: 4.2
   recoverArcDepth: 1
   diveCooldown: 1.5
   stompBounceForce: 14
