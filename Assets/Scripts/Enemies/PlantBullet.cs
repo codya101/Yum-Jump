@@ -79,7 +79,11 @@ public class PlantBullet : SimBehaviour
             return;
         }
 
+        // Shooters are immune to bullets — without this, a trunk's own shot spawns
+        // overlapping its body (which has a Rigidbody2D, so trigger events DO fire,
+        // unlike the static plant) and pops instantly at the muzzle.
         if (collision.GetComponent<Plant>() != null) return;
+        if (collision.GetComponent<Trunk>() != null) return;
         if (collision.isTrigger) return;
 
         DestroySelf();
