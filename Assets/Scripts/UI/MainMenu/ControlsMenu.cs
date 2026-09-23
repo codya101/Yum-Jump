@@ -27,6 +27,7 @@ public class ControlsMenu : MonoBehaviour
         ("Spacebar  or  Up Arrow", "Jump / Double Jump"),
         ("Spacebar / Up Arrow while wall sliding", "Wall Jump"),
         ("Tab", "Open / Close Pause Menu"),
+        ("R  (in Pause Menu)", "Restart Level"),
     };
 
     // Run after the popup closes so the Settings menu can re-show itself.

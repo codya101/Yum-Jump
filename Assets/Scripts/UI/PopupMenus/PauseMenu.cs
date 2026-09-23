@@ -72,6 +72,13 @@ public class PauseMenu : MonoBehaviour
             // complete popup, which also sets timeScale to 0).
             else if (Time.timeScale != 0f) Pause();
         }
+        // Keyboard shortcut for the Restart button; only live while the menu is open
+        // (and not under the Settings overlay), so a stray R mid-run does nothing.
+        else if (isPaused && !settingsOpen && Input.GetKeyDown(KeyCode.R))
+        {
+            AudioManager.Instance.PlayMenuSelect();
+            OnRestart();
+        }
     }
 
     private void OnDestroy()
@@ -215,7 +222,7 @@ public class PauseMenu : MonoBehaviour
         rowLayout.childForceExpandWidth = false;
         SetPreferredHeight(buttonRow, 80f);
 
-        Button restartBtn = CreateButton(buttonRow.transform, "RestartBtn", "Restart", RestartBtnColor);
+        Button restartBtn = CreateButton(buttonRow.transform, "RestartBtn", "Restart (R)", RestartBtnColor);
         restartBtn.onClick.AddListener(OnRestart);
 
         Button mainMenuBtn = CreateButton(buttonRow.transform, "MainMenuBtn", "Main Menu", MainMenuBtnColor);
