@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using YumJump.Agent;
 
@@ -43,6 +42,9 @@ public class Player : SimBehaviour
     private bool isGrounded;
     private bool isAirborne;
     private bool isWallDetected;
+    // How far inside each side of the capsule the outer ground rays sit, so they read the floor
+    // under the player's feet without clipping a wall the capsule is pressed flush against.
+    private const float GroundCheckEdgeInset = 0.1f;
     private float airborneStartTime;
     // A real jump/fall keeps the player airborne well past this; the rapid grounded/airborne
     // flicker from riding a falling platform doesn't, so it's used to gate the landing sound.
@@ -347,7 +349,7 @@ public class Player : SimBehaviour
 
     private void HandleCollision()
     {
-        RaycastHit2D groundHit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        RaycastHit2D groundHit = GroundCheck();
         isGrounded = groundHit.collider != null;
         isWallDetected = Physics2D.Raycast(transform.position, Vector2.right * facingDir, wallCheckDistance, whatIsGround);
 
@@ -357,6 +359,32 @@ public class Player : SimBehaviour
             currentSurface = groundHit.collider.CompareTag(SandTag)
                 ? AudioManager.Surface.Sand
                 : AudioManager.Surface.Wood;
+    }
+
+    /// <summary>
+    /// Fires three downward rays - the collider's centre plus one just inside each side - and
+    /// returns the first that hits ground.
+    /// A single centre ray stops finding the floor as soon as the player's middle crosses a
+    /// ledge, even while half the capsule is still resting on it. That read as airborne, so the
+    /// player awkwardly "hung" off platform edges in the fall animation, and a trampoline landed
+    /// on near its edge never counted as ground at all. The side rays are inset from the capsule
+    /// silhouette so a wall the player is pressed against can't be mistaken for a floor.
+    /// </summary>
+    private RaycastHit2D GroundCheck()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, groundCheckDistance, whatIsGround);
+        if (hit.collider != null)
+            return hit;
+
+        Bounds bounds = cd.bounds;
+        float inset = Mathf.Min(GroundCheckEdgeInset, bounds.extents.x * 0.5f);
+        float y = transform.position.y;
+
+        hit = Physics2D.Raycast(new Vector2(bounds.min.x + inset, y), Vector2.down, groundCheckDistance, whatIsGround);
+        if (hit.collider != null)
+            return hit;
+
+        return Physics2D.Raycast(new Vector2(bounds.max.x - inset, y), Vector2.down, groundCheckDistance, whatIsGround);
     }
 
     // Plays a footstep on a fixed cadence while the player is actually walking on the
@@ -392,5 +420,18 @@ public class Player : SimBehaviour
     {
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x, transform.position.y - groundCheckDistance));
         Gizmos.DrawLine(transform.position, new Vector2(transform.position.x + (facingDir * wallCheckDistance), transform.position.y));
+
+        if (cd == null)
+            cd = GetComponent<CapsuleCollider2D>();
+
+        if (cd == null)
+            return;
+
+        Bounds bounds = cd.bounds;
+        float inset = Mathf.Min(GroundCheckEdgeInset, bounds.extents.x * 0.5f);
+        float y = transform.position.y;
+
+        Gizmos.DrawLine(new Vector2(bounds.min.x + inset, y), new Vector2(bounds.min.x + inset, y - groundCheckDistance));
+        Gizmos.DrawLine(new Vector2(bounds.max.x - inset, y), new Vector2(bounds.max.x - inset, y - groundCheckDistance));
     }
 }
